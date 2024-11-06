@@ -22,9 +22,9 @@
   --background-color: #ffffff; /* Background color for the entire website, including individual sections */
   --default-color: #444444; /* Default color used for the majority of the text content across the entire website */
   --heading-color: #273d4e; /* Color for headings, subheadings and title throughout the website */
-  --accent-color: #ffffff; /* Accent color that represents your brand on the website. It's used for buttons, links, and other elements that need to stand out */
+  --accent-color: #ff4a17; /* Accent color that represents your brand on the website. It's used for buttons, links, and other elements that need to stand out */
   --surface-color: #ffffff; /* The surface color is used as a background of boxed elements within sections, such as cards, icon boxes, or other elements that require a visual separation from the global background. */
-  --contrast-color: #000000; /* Contrast color for text, ensuring readability against backgrounds of accent, heading, or default colors. */
+  --contrast-color: #ffffff; /* Contrast color for text, ensuring readability against backgrounds of accent, heading, or default colors. */
 }
 
 /* Nav Menu Colors - The following color variables are used specifically for the navigation menu. They are separate from the global colors to allow for more customization options */
@@ -49,7 +49,7 @@
   --default-color: #ffffff;
   --heading-color: #ffffff;
   --surface-color: #28323a;
-  --contrast-color: #000000;
+  --contrast-color: #ffffff;
 }
 
 /* Smooth scroll */
@@ -957,8 +957,8 @@ section,
 }
 
 .hero .btn-get-started {
-  background: var(--accent-color);
-  color: var(--contrast-color);
+  background: #ffffff;
+  color: #000000;
   font-weight: 400;
   font-size: 14px;
   letter-spacing: 1px;
@@ -982,7 +982,7 @@ section,
 }
 
 .hero .btn-watch-video i {
-  color: var(--accent-color);
+  color: #777a77;
   font-size: 32px;
   transition: 0.3s;
   line-height: 0;
@@ -1222,9 +1222,9 @@ section,
 }
 
 .features .nav-link.active {
-  background: var(--accent-color);
+  background: #777a77;
   color: var(--contrast-color);
-  border-color: var(--accent-color);
+  border-color: #777a77;
 }
 
 .features .nav-link.active h4 {
