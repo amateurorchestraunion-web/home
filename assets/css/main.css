@@ -18,7 +18,7 @@
 }
 
 /* Global Colors - The following color variables are used throughout the website. Updating them here will change the color scheme of the entire website */
-:root { 
+:root {
   --background-color: #ffffff; /* Background color for the entire website, including individual sections */
   --default-color: #444444; /* Default color used for the majority of the text content across the entire website */
   --heading-color: #273d4e; /* Color for headings, subheadings and title throughout the website */
@@ -888,7 +888,7 @@ section,
   width: 120px;
   height: 1px;
   display: inline-block;
-  background: var(--accent-color);
+  background: #777a77;
   margin: 4px 10px;
 }
 
@@ -970,7 +970,9 @@ section,
 }
 
 .hero .btn-get-started:hover {
-  background: color-mix(in srgb, var(--accent-color), transparent 20%);
+  background: #777a77;
+  /*opacity: 80%;*/
+  color: white;
 }
 
 .hero .btn-watch-video {
@@ -982,7 +984,7 @@ section,
 }
 
 .hero .btn-watch-video i {
-  color: #777a77;
+  color: #ffffff;
   font-size: 32px;
   transition: 0.3s;
   line-height: 0;
@@ -1231,11 +1233,23 @@ section,
   color: var(--contrast-color);
 }
 
-@media (max-width: 768px) {
+/*@media (max-width: 768px) {*/
+/*  .features .nav-link i {*/
+/*    padding: 0;*/
+/*    line-height: 1;*/
+/*    font-size: 36px;*/
+/*  }*/
+/*}*/
+.mobile-nav {
+  display: none;
+}
+
+@media (max-width: 992px) {
   .features .nav-link i {
-    padding: 0;
-    line-height: 1;
-    font-size: 36px;
+    display: none;
+  }
+  .mobile-nav {
+    display: block;
   }
 }
 
