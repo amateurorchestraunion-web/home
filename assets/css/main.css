@@ -11,10 +11,59 @@
 # Help: https://bootstrapmade.com/color-system/
 --------------------------------------------------------------*/
 /* Fonts */
+/* NanumSquareNeo 폰트 정의 */
+@font-face {
+  font-family: 'NanumSquareNeoLight';
+  src: url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-aLt.eot);
+  src: url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-aLt.eot?#iefix) format("embedded-opentype"),
+  url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-aLt.woff) format("woff"),
+  url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-aLt.ttf) format("truetype");
+}
+
+@font-face {
+  font-family: 'NanumSquareNeo';
+  src: url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-bRg.eot);
+  src: url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-bRg.eot?#iefix) format("embedded-opentype"),
+  url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-bRg.woff) format("woff"),
+  url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-bRg.ttf) format("truetype");
+}
+
+@font-face {
+  font-family: 'NanumSquareNeoBold';
+  src: url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-cBd.eot);
+  src: url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-cBd.eot?#iefix) format("embedded-opentype"),
+  url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-cBd.woff) format("woff"),
+  url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-cBd.ttf) format("truetype");
+}
+
+@font-face {
+  font-family: 'NanumSquareNeoExtraBold';
+  src: url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-dEb.eot);
+  src: url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-dEb.eot?#iefix) format("embedded-opentype"),
+  url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-dEb.woff) format("woff"),
+  url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-dEb.ttf) format("truetype");
+}
+
+@font-face {
+  font-family: 'NanumSquareNeoHeavy';
+  src: url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-eHv.eot);
+  src: url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-eHv.eot?#iefix) format("embedded-opentype"),
+  url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-eHv.woff) format("woff"),
+  url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-eHv.ttf) format("truetype");
+}
+
+@font-face {
+  font-family: 'NanumSquareNeoVariable';
+  src: url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeo-Variable.eot);
+  src: url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeo-Variable.eot?#iefix) format("embedded-opentype"),
+  url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeo-Variable.woff) format("woff"),
+  url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeo-Variable.ttf) format("truetype");
+}
+
 :root {
-  --default-font: "Roboto",  system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --heading-font: "Raleway",  sans-serif;
-  --nav-font: "Inter",  sans-serif;
+  --default-font: "NanumSquareNeo", "Roboto",  system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --heading-font: "NanumSquareNeo", "Raleway",  sans-serif;
+  --nav-font: "NanumSquareNeo", "Inter",  sans-serif;
 }
 
 /* Global Colors - The following color variables are used throughout the website. Updating them here will change the color scheme of the entire website */
@@ -1858,3 +1907,27 @@ section,
 .starter-section {
   /* Add your styles here */
 }
+
+/*--------------------------------------------------------------
+# Customize Style
+--------------------------------------------------------------*/
+.font-bold {
+ font-family: NanumSquareNeoBold;
+}
+
+/*.mobile-portfolio {*/
+/*  display: none;*/
+/*}*/
+
+/*.desktop-portfolio {*/
+/*  display: block;*/
+/*}*/
+
+/*@media (max-width: 992px) {*/
+/*  .desktop-portfolio {*/
+/*    display: none;*/
+/*  }*/
+/*  .mobile-portfolio {*/
+/*    display: block;*/
+/*  }*/
+/*}*/

@@ -139,14 +139,14 @@
   document.querySelectorAll('.isotope-layout').forEach(function(isotopeItem) {
     let layout = isotopeItem.getAttribute('data-layout') ?? 'masonry';
     let filter = isotopeItem.getAttribute('data-default-filter') ?? '*';
-    let sort = isotopeItem.getAttribute('data-sort') ?? 'original-order';
+    let sort = isotopeItem.getAttribute('data-sort') ?? '[data-date]';
 
     let initIsotope;
     imagesLoaded(isotopeItem.querySelector('.isotope-container'), function() {
       initIsotope = new Isotope(isotopeItem.querySelector('.isotope-container'), {
         itemSelector: '.isotope-item',
         layoutMode: layout,
-        filter: filter,
+        filter: '.filter-2015',
         sortBy: sort
       });
     });
