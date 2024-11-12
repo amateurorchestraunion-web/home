@@ -1304,7 +1304,7 @@ section,
 
 @media (max-width: 575px) {
   .features .nav-link {
-    padding: 20px;
+    padding: 15px;
   }
 
   /*mobile-nav-content-4 {*/
@@ -1941,7 +1941,7 @@ section,
     font-size: 1.5rem !important;
   }
   .mobile-main-2 {
-    font-size: 0.9rem !important;
+    font-size: 0.8rem !important;
   }
 }
 
