@@ -1940,6 +1940,9 @@ section,
   .mobile-main {
     font-size: 1.2rem !important;
   }
+  .logo-img {
+    width: 18rem;
+  }
   .mobile-main-2 {
     font-size: 0.8rem !important;
   }
