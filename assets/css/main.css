@@ -1948,4 +1948,176 @@ section,
   }
 }
 
+/*--------------------------------------------------------------
+# 역대 연주 정보 스타일
+--------------------------------------------------------------*/
 
+#features-tab-4 > section#history {
+  overflow: visible !important;
+  /* 필요시 position 고정 해제 */
+  position: static !important;
+}
+
+/* ── 포스터 균일 높이 & object-fit 처리 ── */
+/* 모바일 기본 (＜768px) */
+.portfolio-content.h-100 {
+  height: 240px !important;
+  overflow: hidden;
+}
+
+/* 태블릿 이상 (≥768px) */
+@media (min-width: 768px) {
+  .portfolio-content.h-100 {
+    height: 320px !important;
+  }
+}
+
+/* 데스크탑 이상 (≥992px) */
+@media (min-width: 1025px) {
+  .portfolio-content.h-100 {
+    height: 575px !important;
+  }
+}
+.portfolio-content.h-100 img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;          /* 비율 유지하며 꽉 채우기 */
+}
+
+@media only screen
+and (device-width: 768px) and (device-height: 1024px) and (orientation: portrait),
+only screen
+and (device-width: 1024px) and (device-height: 768px) and (orientation: landscape) {
+  .portfolio-content.h-100 {
+    height: 320px !important;
+    overflow: hidden;
+  }
+}
+
+/* iPad Pro 12.9" 전용 (1024×1366 CSSpx) */
+@media only screen
+and (device-width: 1024px) and (device-height: 1366px) and (orientation: portrait),
+only screen
+and (device-width: 1366px) and (device-height: 1024px) and (orientation: landscape) {
+  .portfolio-content.h-100 {
+    height: 420px !important;
+    overflow: hidden;
+  }
+}
+
+/*--------------------------------------------------------------
+# AOU 소개 스타일
+--------------------------------------------------------------*/
+
+@media (max-width: 991px) {
+  /* 이미지 사이 간격 조절 */
+  #features-tab-1 .pe-1 { padding-right: 0.25rem; }
+  #features-tab-1 .ps-1 { padding-left: 0.25rem; }
+  /* 텍스트-이미지 간 간격 */
+  #features-tab-1 .about-img { margin-bottom: 1rem; }
+}
+@media (min-width: 768px) and (max-width: 1199.98px) {
+  /* 모바일·태블릿용 2-up 이미지 블록 */
+  #features-tab-1 .row.d-flex.d-xl-none .about-img {
+    margin-top: 1rem;  /* 원하시는 만큼 조절 */
+  }
+}
+@media (max-width: 767.98px) {
+  /* 2-up 이미지 위쪽 여유 */
+  #features-tab-1 .row.d-flex.d-xl-none .about-img {
+    margin-top: 1rem;    /* 필요에 따라 값 조절 */
+  }
+  /* 모바일 텍스트 크기 축소 */
+  #features-tab-1 .row.d-flex.d-xl-none .col-12 p {
+    font-size: 0.875rem; /* 예: 14px 정도 */
+    line-height: 1.4;
+  }
+}
+
+/*--------------------------------------------------------------
+# 연혁 스타일
+--------------------------------------------------------------*/
+/* 연혁 타임라인 스타일 */
+#features-tab-2 .timeline {
+  margin: 0;
+  padding: 0;
+}
+#features-tab-2 .timeline-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+#features-tab-2 .timeline-date {
+  flex: 0 0 100px;
+  font-weight: 600;
+  color: var(--accent-color);
+}
+#features-tab-2 .timeline-content {
+  flex: 1;
+  line-height: 1.6;
+  color: var(--default-color);
+}
+@media (max-width: 575.98px) {
+  /* 모바일에서 timeline-item 을 한 줄(row) flex 컨테이너로 */
+  #features-tab-2 .timeline-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 0.5rem; /* 항목 간 간격 */
+  }
+
+  /* 날짜 영역 고정 너비, 우측 여백 추가 */
+  #features-tab-2 .timeline-item .timeline-date {
+    flex: 0 0 80px; /* 날짜 칸 너비 (필요시 px → % 로 조정) */
+    margin-right: 0.5rem;
+  }
+
+  /* 내용 영역 남은 공간 모두 차지 */
+  #features-tab-2 .timeline-item .timeline-content {
+    flex: 1;
+  }
+
+  #features-tab-2 .timeline-content {
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+  #features-tab-2 .timeline-date {
+    font-size: 14px;
+    line-height: 1.2;
+  }
+
+}
+
+/*--------------------------------------------------------------
+# 소속대학 일람 스타일
+--------------------------------------------------------------*/
+#features-tab-3 .colleges {
+  column-count: 3;
+  column-gap: 2rem;
+}
+@media (max-width: 992px) {
+  #features-tab-3 .colleges { column-count: 2; }
+}
+@media (max-width: 575px) {
+  #features-tab-3 .colleges { column-count: 1; }
+}
+
+/* 아이템 flex 정렬 & 구분자/텍스트 스타일 */
+#features-tab-3 .univ-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  break-inside: avoid;   /* 컬럼 분할 방지 */
+}
+#features-tab-3 .school {
+  flex-shrink: 0;
+  width: 120px;          /* 학교명 칸 너비 고정 */
+  font-weight: bold;
+}
+#features-tab-3 .separator {
+  margin: 0 0.5rem;
+  color: var(--accent-color);
+}
+#features-tab-3 .orchestra {
+  flex: 1;
+}
