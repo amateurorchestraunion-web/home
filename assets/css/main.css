@@ -2120,6 +2120,6 @@ and (device-width: 1366px) and (device-height: 1024px) and (orientation: landsca
 #features-tab-3 .orchestra {
   flex: 1;
 }
-.history-description {
+.history-description p{
   font-size: 1rem !important;
 }
