@@ -2085,7 +2085,6 @@ and (device-width: 1366px) and (device-height: 1024px) and (orientation: landsca
     font-size: 14px;
     line-height: 1.2;
   }
-
 }
 
 /*--------------------------------------------------------------
@@ -2120,4 +2119,7 @@ and (device-width: 1366px) and (device-height: 1024px) and (orientation: landsca
 }
 #features-tab-3 .orchestra {
   flex: 1;
+}
+.history-description {
+  font-size: 1rem !important;
 }
