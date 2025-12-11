@@ -2129,7 +2129,7 @@ and (device-width: 1366px) and (device-height: 1024px) and (orientation: landsca
 .floating-btn {
   position: fixed;
   bottom: 20px;
-  right: 20px;
+  left: 20px;
   width: 70px;
   height: 70px;
   z-index: 9999;
