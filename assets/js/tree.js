@@ -1,4 +1,4 @@
-import { 
+import {
   db, collection, doc, setDoc, getDoc, deleteDoc, onSnapshot
 } from "./firebase.js";
 
@@ -6,28 +6,35 @@ console.log("Tree.js loaded");
 
 const treeArea = document.getElementById("tree-area");
 const treeImg = document.getElementById("tree-img");
+
 const ornamentGrid = document.getElementById("ornament-grid");
+const mobileGrid = document.getElementById("mobile-grid");
+
 const panel = document.getElementById("panel");
+const mobilePanel = document.getElementById("mobile-panel");
+
 const floatingBtn = document.getElementById("floating-btn");
 
 const popupOverlay = document.getElementById("popup-overlay");
 const memoListBox = document.getElementById("memo-list");
 const memoInput = document.querySelector(".memo-input");
 const sendBtn = document.querySelector(".memo-send-btn");
+
 const closePopupBtn = document.querySelector(".close-popup");
+const closeMobileBtn = document.querySelector(".close-mobile");
 const deleteBtn = document.querySelector(".delete-btn");
 
 let currentOrnamentId = null;
 
-const BASE_ORNAMENT_SIZE = 60;   // 기준 크기(px)
+const BASE_ORNAMENT_SIZE = 60;
+const isMobile = window.matchMedia("(max-width: 768px)").matches;
+
 
 /* ============================================================
-   트리 스케일 계산 (오너먼트 자동 크기 조정에 사용)
+   트리 스케일 계산
 ============================================================ */
 function getTreeScale() {
-  const displayWidth = treeImg.clientWidth;
-  const naturalWidth = treeImg.naturalWidth;
-  return displayWidth / naturalWidth;  // 스케일 비율
+  return treeImg.clientWidth / treeImg.naturalWidth;
 }
 
 function getOrnamentSize() {
@@ -39,53 +46,86 @@ function getOrnamentSize() {
    패널 열기 / 닫기
 ============================================================ */
 document.querySelector(".close-panel").onclick = () => {
+  if (isMobile) return;
   document.body.classList.remove("panel-open");
   document.body.classList.add("panel-closed");
   floatingBtn.style.display = "flex";
 };
 
+closeMobileBtn.onclick = () => {
+  mobilePanel.style.bottom = "-40%";
+  floatingBtn.style.display = "flex";
+};
+
 floatingBtn.onclick = () => {
-  document.body.classList.add("panel-open");
-  document.body.classList.remove("panel-closed");
   floatingBtn.style.display = "none";
+
+  if (isMobile) {
+    mobilePanel.style.bottom = "0";
+  } else {
+    document.body.classList.add("panel-open");
+    document.body.classList.remove("panel-closed");
+  }
 };
 
 
 /* ============================================================
-   오너먼트 자동 생성
+   오너먼트 자동 생성 (PC + Mobile)
 ============================================================ */
-for (let i = 1; i <= 12; i++) {
-  const div = document.createElement("div");
+function createOrnamentForGrid(imgSrc, id) {
+  const wrapper = document.createElement("div");
   const img = document.createElement("img");
-
-  const num = i.toString().padStart(2, "0");
-  img.src = `./assets/img/ornaments/ornament-${num}.png`;
-  img.dataset.id = `orn_${num}`;
+  img.src = imgSrc;
+  img.dataset.id = id;
   img.draggable = true;
 
   img.addEventListener("dragstart", (e) => {
     e.dataTransfer.setData("src", img.src);
   });
 
-  div.appendChild(img);
-  ornamentGrid.appendChild(div);
+  wrapper.appendChild(img);
+  return wrapper;
+}
+
+for (let i = 1; i <= 12; i++) {
+  const num = i.toString().padStart(2, "0");
+  const src = `./assets/img/ornaments/ornament-${num}.png`;
+  const id = `orn_${num}`;
+
+  ornamentGrid.appendChild(createOrnamentForGrid(src, id));
+
+  const mobileImg = document.createElement("img");
+  mobileImg.src = src;
+  mobileImg.dataset.id = id;
+  mobileImg.draggable = true;
+
+  mobileImg.addEventListener("dragstart", (e) => {
+    e.dataTransfer.setData("src", mobileImg.src);
+  });
+
+  mobileGrid.appendChild(mobileImg);
 }
 
 
 /* ============================================================
-   오너먼트 간 최소 거리 충돌 검사 (1/4 규칙)
+   오너먼트 간 최소 거리 검사
 ============================================================ */
 function isTooClose(newX, newY, size) {
   const ornaments = treeArea.querySelectorAll(".placed");
 
-  const minDistance = size * 0.25 * 2; // 지름 × 0.25
+  const minDist = size * 0.5;
 
   for (const o of ornaments) {
-    const ox = parseFloat(o.dataset.x);
-    const oy = parseFloat(o.dataset.y);
-    const dist = Math.sqrt((ox - newX)**2 + (oy - newY)**2);
+    const ox = parseFloat(o.dataset.xRatio);
+    const oy = parseFloat(o.dataset.yRatio);
 
-    if (dist < minDistance) return true;
+    const rect = treeImg.getBoundingClientRect();
+    const px = ox * rect.width;
+    const py = oy * rect.height;
+
+    const dist = Math.sqrt((px - newX)**2 + (py - newY)**2);
+
+    if (dist < minDist) return true;
   }
   return false;
 }
@@ -94,7 +134,7 @@ function isTooClose(newX, newY, size) {
 /* ============================================================
    트리 드롭 이벤트
 ============================================================ */
-treeArea.addEventListener("dragover", e => e.preventDefault());
+treeArea.addEventListener("dragover", (e) => e.preventDefault());
 
 treeArea.addEventListener("drop", async (e) => {
   e.preventDefault();
@@ -102,59 +142,46 @@ treeArea.addEventListener("drop", async (e) => {
   const src = e.dataTransfer.getData("src");
   if (!src) return;
 
-  const rect = treeArea.getBoundingClientRect();
+  const rect = treeImg.getBoundingClientRect();
   const x = e.clientX - rect.left;
   const y = e.clientY - rect.top;
 
   const size = getOrnamentSize();
-
   if (isTooClose(x, y, size)) {
-    alert("오너먼트가 너무 가까워요! 최소 간격을 유지해주세요.");
+    alert("오너먼트가 너무 가까워요! 간격을 유지해주세요.");
     return;
   }
 
+  const xRatio = x / rect.width;
+  const yRatio = y / rect.height;
+
   const ornamentDoc = doc(collection(db, "ornaments"));
-  const treeRect = treeImg.getBoundingClientRect();
-  const xRatio = x / treeRect.width;
-  const yRatio = y / treeRect.height;
-  
-  await setDoc(ornamentDoc, { 
-    id: ornamentDoc.id, 
-    src, 
-    xRatio, 
-    yRatio, 
-    hasMemo: false 
+
+  await setDoc(ornamentDoc, {
+    id: ornamentDoc.id,
+    src,
+    xRatio,
+    yRatio,
+    hasMemo: false,
   });
 
-  placeOrnament(ornamentDoc.id, src, x, y);
+  placeOrnament(ornamentDoc.id, src, xRatio, yRatio);
 });
 
 
 /* ============================================================
-   오너먼트 DOM 생성 (자동 리사이즈 포함)
+   오너먼트 DOM 생성 (정확한 위치 = ratio 기반)
 ============================================================ */
-function placeOrnament(id, src, x, y) {
-  if (!id || !src) return;
-
+function placeOrnament(id, src, xRatio, yRatio) {
   const img = document.createElement("img");
   img.src = src;
   img.dataset.oid = id;
-  img.dataset.x = x;
-  img.dataset.y = y;
-
-  const size = getOrnamentSize();
-
+  img.dataset.xRatio = xRatio;
+  img.dataset.yRatio = yRatio;
   img.classList.add("placed");
   img.style.position = "absolute";
-  img.style.width = `${size}px`;
-  
-  const rect = treeImg.getBoundingClientRect();
-  const actualX = rect.left + rect.width * xRatio;
-  const actualY = rect.top + rect.height * yRatio;
-  
-  img.style.left = `${actualX}px`;
-  img.style.top = `${actualY}px`;
-  img.style.transform = "translate(-50%, -50%)";
+
+  updateOneOrnament(img);
 
   img.addEventListener("click", () => openPopup(id));
 
@@ -163,53 +190,45 @@ function placeOrnament(id, src, x, y) {
 
 
 /* ============================================================
-   화면 리사이즈 시 오너먼트 크기 자동 업데이트
+   단일 오너먼트 자동 리사이징 + 재배치
 ============================================================ */
-window.addEventListener("resize", () => {
-  const ornaments = document.querySelectorAll(".placed");
-  const size = getOrnamentSize();
+function updateOneOrnament(o) {
+  const xRatio = parseFloat(o.dataset.xRatio);
+  const yRatio = parseFloat(o.dataset.yRatio);
 
-  ornaments.forEach(o => {
-    o.style.width = `${size}px`;
-  });
-});
+  const size = getOrnamentSize();
+  o.style.width = `${size}px`;
+
+  const rect = treeImg.getBoundingClientRect();
+  o.style.left = `${rect.left + rect.width * xRatio}px`;
+  o.style.top = `${rect.top + rect.height * yRatio}px`;
+
+  o.style.transform = "translate(-50%, -50%)";
+}
 
 
 /* ============================================================
-   화면 크기 변화 시 오너먼트 재배치
+   전체 오너먼트 업데이트
 ============================================================ */
-window.addEventListener("resize", () => updateAllOrnaments());
-
-function updateAllOrnaments() {
-  const ornaments = document.querySelectorAll(".placed");
-
-  ornaments.forEach((o) => {
-    const xRatio = parseFloat(o.dataset.xratio);
-    const yRatio = parseFloat(o.dataset.yratio);
-
-    const rect = treeImg.getBoundingClientRect();
-    const newX = rect.width * xRatio;
-    const newY = rect.height * yRatio;
-
-    const size = getOrnamentSize();
-
-    o.style.width = `${size}px`;
-    o.style.left = `${newX}px`;
-    o.style.top = `${newY}px`;
-  });
+function updateAll() {
+  document.querySelectorAll(".placed").forEach(updateOneOrnament);
 }
+
+window.addEventListener("resize", updateAll);
+
+
 /* ============================================================
    Firestore 실시간 반영
 ============================================================ */
 onSnapshot(collection(db, "ornaments"), (snapshot) => {
   snapshot.docChanges().forEach((ch) => {
+    const d = ch.doc.data();
+
     if (ch.type === "added") {
-      const d = ch.doc.data();
       if (!treeArea.querySelector(`[data-oid="${d.id}"]`)) {
-        placeOrnament(d.id, d.src, d.x, d.y);
+        placeOrnament(d.id, d.src, d.xRatio, d.yRatio);
       }
     }
-
     if (ch.type === "removed") {
       const el = treeArea.querySelector(`[data-oid="${ch.doc.id}"]`);
       if (el) el.remove();
@@ -217,8 +236,9 @@ onSnapshot(collection(db, "ornaments"), (snapshot) => {
   });
 });
 
+
 /* ============================================================
-   팝업 열기
+   팝업
 ============================================================ */
 function openPopup(id) {
   currentOrnamentId = id;
@@ -226,16 +246,13 @@ function openPopup(id) {
   loadMemoList();
 }
 
-/* ============================================================
-   팝업 닫기
-============================================================ */
 closePopupBtn.onclick = () => {
   popupOverlay.style.display = "none";
 };
 
 
 /* ============================================================
-   메모 불러오기
+   메모 기능
 ============================================================ */
 async function loadMemoList() {
   memoListBox.innerHTML = "";
@@ -245,7 +262,6 @@ async function loadMemoList() {
   onSnapshot(memoCol, async (snapshot) => {
     memoListBox.innerHTML = "";
 
-    // 메모 없으면 hasMemo = false로 업데이트
     if (snapshot.empty) {
       await setDoc(
         doc(db, "ornaments", currentOrnamentId),
@@ -254,48 +270,37 @@ async function loadMemoList() {
       );
     }
 
-    snapshot.docs
-      .sort((a, b) => a.data().timestamp - b.data().timestamp)
-      .forEach((docu) => {
-        const d = docu.data();
+    snapshot.forEach((docu) => {
+      const d = docu.data();
+      const box = document.createElement("div");
+      box.className = "memo-item";
 
-        const box = document.createElement("div");
-        box.className = "memo-item";
+      box.innerHTML = `
+        <div class="memo-timestamp">${new Date(d.timestamp).toLocaleString()}</div>
+        <div>${d.text}</div>
+      `;
 
-        const t = new Date(d.timestamp).toLocaleString("ko-KR");
+      const delBtn = document.createElement("span");
+      delBtn.className = "delete-memo-btn";
+      delBtn.textContent = "✕";
 
-        box.innerHTML = `
-          <div class="memo-timestamp">${t}</div>
-          <div>${d.text}</div>
-        `;
+      delBtn.onclick = async () => {
+        if (confirm("메모를 삭제하시겠습니까?")) {
+          await deleteDoc(
+            doc(db, "ornaments", currentOrnamentId, "memoList", docu.id)
+          );
+        }
+      };
 
-        const delBtn = document.createElement("span");
-        delBtn.className = "delete-memo-btn";
-        delBtn.textContent = "✕";
-
-        delBtn.onclick = async () => {
-          if (confirm("메모를 삭제하시겠습니까?")) {
-            await deleteDoc(
-              doc(db, "ornaments", currentOrnamentId, "memoList", docu.id)
-            );
-          }
-        };
-
-        box.appendChild(delBtn);
-        memoListBox.appendChild(box);
-      });
+      box.appendChild(delBtn);
+      memoListBox.appendChild(box);
+    });
   });
 }
 
-/* ============================================================
-   메모 입력
-============================================================ */
-memoInput.addEventListener("keydown", (e) => {
-  // Shift+Enter → 줄바꿈
-  if (e.key === "Enter" && e.shiftKey) return;
 
-  // Enter → 전송
-  if (e.key === "Enter") {
+memoInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.shiftKey) {
     e.preventDefault();
     sendBtn.click();
   }
@@ -305,12 +310,14 @@ sendBtn.onclick = async () => {
   const text = memoInput.value.trim();
   if (!text) return;
 
-  const memoId = doc(collection(db, "ornaments", currentOrnamentId, "memoList")).id;
+  const memoId = doc(
+    collection(db, "ornaments", currentOrnamentId, "memoList")
+  ).id;
 
-  await setDoc(doc(db, "ornaments", currentOrnamentId, "memoList", memoId), {
-    text,
-    timestamp: Date.now()
-  });
+  await setDoc(
+    doc(db, "ornaments", currentOrnamentId, "memoList", memoId),
+    { text, timestamp: Date.now() }
+  );
 
   await setDoc(
     doc(db, "ornaments", currentOrnamentId),
@@ -332,7 +339,7 @@ deleteBtn.onclick = async () => {
   if (!snap.exists()) return;
 
   if (snap.data().hasMemo) {
-    alert("메모가 없을 때만 삭제 가능합니다.");
+    alert("메모가 없어야 삭제됩니다.");
     return;
   }
 
@@ -342,4 +349,3 @@ deleteBtn.onclick = async () => {
     currentOrnamentId = null;
   }
 };
-
