@@ -1,55 +1,131 @@
 body {
   margin: 0;
-  background: #3f2e1e;
+  overflow: hidden; /* 전체 스크롤 금지 */
+  background: #2a1e1a;
   display: flex;
-  justify-content: center;
-  font-family: sans-serif;
 }
 
+/* 🌲 트리 영역 */
 .tree-container {
-  position: relative;
-  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  transition: width 0.3s ease;
+  background: #2a1e1a;
+}
+
+/* 패널 열렸을 때 → 70% */
+body.panel-open .tree-container {
+  width: 70vw;
+}
+
+/* 패널 닫힘 → 100% */
+body:not(.panel-open) .tree-container {
+  width: 100vw;
 }
 
 #tree {
-  width: 450px;
+  height: 100vh;
+  width: auto;
+  object-fit: contain;
 }
 
+/* 🎁 오른쪽 패널 */
 .ornament-panel {
-  position: fixed;
-  top: 20px;
-  right: 20px;
+  width: 30vw;
+  height: 100vh;
   background: #ffffffdd;
-  padding: 15px;
-  border-radius: 12px;
+  backdrop-filter: blur(4px);
+  position: relative;
+  transition: right 0.3s ease;
+  overflow-y: scroll;
 }
 
-.ornament {
-  width: 50px;
-  height: 50px;
-  margin: 4px;
-  cursor: grab;
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px;
+  font-size: 18px;
+  font-weight: bold;
 }
 
-.placed {
-  position: absolute;
-  width: 50px;
-  height: 50px;
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 22px;
   cursor: pointer;
 }
 
-.modal {
-  display: none;
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0,0,0,0.5);
+.ornament-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  padding: 12px;
 }
 
-.modal-content {
+.orn {
+  width: 60px;
+  height: 60px;
+  cursor: grab;
+}
+
+/* ⭐ 플로팅 오너먼트 버튼 */
+.floating-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 70px;
+  height: 70px;
   background: white;
-  padding: 20px;
-  width: 300px;
-  margin: 150px auto;
-  border-radius: 10px;
+  border-radius: 50%;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hidden { display: none; }
+
+/* 📱 모바일 슬라이드 패널 */
+@media (max-width: 768px) {
+
+  body.panel-open .tree-container {
+    width: 100vw; /* 모바일에서는 트리가 항상 100% */
+  }
+
+  .ornament-panel { display: none; }
+
+  #mobilePanel {
+    position: fixed;
+    bottom: -40%;
+    height: 40%;
+    width: 100%;
+    background: #ffffffee;
+    backdrop-filter: blur(6px);
+    border-radius: 20px 20px 0 0;
+    transition: bottom 0.3s ease;
+  }
+
+  #mobilePanel.open {
+    bottom: 0;
+  }
+
+  .mobile-header {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px;
+    font-size: 18px;
+    font-weight: bold;
+  }
+
+  .mobile-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    padding: 12px;
+    overflow-y: scroll;
+    height: calc(100% - 50px);
+  }
 }
