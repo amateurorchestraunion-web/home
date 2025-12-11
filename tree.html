@@ -1,70 +1,71 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<title>크리스마스트리 꾸미기</title>
-<link rel="stylesheet" href="tree.css">
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+  <meta charset="UTF-8" />
+  <title>크리스마스트리 꾸미기</title>
+  <link rel="stylesheet" href="tree.css" />
 </head>
 
-<body>
+<body class="panel-open">
 
-<div class="tree-container">
-  <img id="tree" src="assets/img/tree.png">
-</div>
-
-<div class="ornament-panel">
-  <h3>오너먼트</h3>
-  <div class="ornament-list">
-    <img class="ornament" src="assets/img/ornaments/ornament-01.png" data-id="ornament01">
-    <img class="ornament" src="assets/img/ornaments/ornament-02.png" data-id="ornament02">
-    <img class="ornament" src="assets/img/ornaments/ornament-03.png" data-id="ornament03">
-    <img class="ornament" src="assets/img/ornaments/ornament-04.png" data-id="ornament04">
-    <img class="ornament" src="assets/img/ornaments/ornament-05.png" data-id="ornament05">
-    <img class="ornament" src="assets/img/ornaments/ornament-06.png" data-id="ornament06">
-    <img class="ornament" src="assets/img/ornaments/ornament-07.png" data-id="ornament07">
-    <img class="ornament" src="assets/img/ornaments/ornament-08.png" data-id="ornament08">
-    <img class="ornament" src="assets/img/ornaments/ornament-09.png" data-id="ornament09">
-    <img class="ornament" src="assets/img/ornaments/ornament-10.png" data-id="ornament10">
+  <!-- 🌲 트리 영역 -->
+  <div class="tree-container">
+    <img id="tree" src="assets/img/tree.png" alt="tree">
   </div>
-</div>
 
-<!-- SVG polygon (경계 영역) -->
-<svg width="0" height="0">
-  <polygon id="tree-area"
-    points="
-      960,240
-      1010,310
-      1070,390
-      1130,480
-      1170,560
-      1200,650
-      1180,750
-      1140,830
-      1070,900
-      960,950
-      850,900
-      780,830
-      740,750
-      720,650
-      750,560
-      800,480
-      860,390
-      910,310
-    ">
-  </polygon>
-</svg>
+  <!-- 🎁 오너먼트 패널 (PC용 30%) -->
+  <div id="ornamentPanel" class="ornament-panel">
+    <div class="panel-header">
+      <span>오너먼트 선택</span>
+      <button id="closePanel" class="close-btn">✕</button>
+    </div>
 
-<!-- 메모 창 -->
-<div id="memoModal" class="modal">
-  <div class="modal-content">
-    <textarea id="memoText" placeholder="메모를 입력하세요"></textarea>
-    <button id="saveMemo">저장</button>
-    <button id="closeMemo">닫기</button>
+    <div class="ornament-grid">
+      <!-- 오너먼트 이미지들 -->
+      <img src="assets/img/ornaments/ornament-01.png" class="orn" data-id="01">
+      <img src="assets/img/ornaments/ornament-02.png" class="orn" data-id="02">
+      <img src="assets/img/ornaments/ornament-03.png" class="orn" data-id="03">
+      <img src="assets/img/ornaments/ornament-04.png" class="orn" data-id="04">
+      <img src="assets/img/ornaments/ornament-05.png" class="orn" data-id="05">
+      <img src="assets/img/ornaments/ornament-06.png" class="orn" data-id="06">
+      <img src="assets/img/ornaments/ornament-07.png" class="orn" data-id="07">
+      <img src="assets/img/ornaments/ornament-08.png" class="orn" data-id="08">
+      <img src="assets/img/ornaments/ornament-09.png" class="orn" data-id="09">
+      <img src="assets/img/ornaments/ornament-10.png" class="orn" data-id="10">
+      <img src="assets/img/ornaments/ornament-11.png" class="orn" data-id="11">
+      <img src="assets/img/ornaments/ornament-12.png" class="orn" data-id="12">
+    </div>
   </div>
-</div>
 
-<script src="tree.js"></script>
+  <!-- ⭐ 패널이 닫혔을 때 나타나는 플로팅 아이콘 -->
+  <div id="floatingOrnamentBtn" class="floating-btn hidden">
+    <img src="assets/img/bulb.png" alt="오너먼트">
+  </div>
+
+  <!-- 📱 모바일 슬라이드 패널 -->
+  <div id="mobilePanel" class="mobile-panel">
+    <div class="mobile-header">
+      <span>오너먼트 선택</span>
+      <button id="closeMobilePanel" class="close-btn">✕</button>
+    </div>
+
+    <div class="mobile-grid">
+      <!-- 모바일용 오너먼트 동일하게 -->
+      <img src="assets/img/ornaments/ornament-01.png" class="orn" data-id="01">
+      <img src="assets/img/ornaments/ornament-02.png" class="orn" data-id="02">
+      <img src="assets/img/ornaments/ornament-03.png" class="orn" data-id="03">
+      <img src="assets/img/ornaments/ornament-04.png" class="orn" data-id="04">
+      <img src="assets/img/ornaments/ornament-05.png" class="orn" data-id="05">
+      <img src="assets/img/ornaments/ornament-06.png" class="orn" data-id="06">
+      <img src="assets/img/ornaments/ornament-07.png" class="orn" data-id="07">
+      <img src="assets/img/ornaments/ornament-08.png" class="orn" data-id="08">
+      <img src="assets/img/ornaments/ornament-09.png" class="orn" data-id="09">
+      <img src="assets/img/ornaments/ornament-10.png" class="orn" data-id="10">
+      <img src="assets/img/ornaments/ornament-11.png" class="orn" data-id="11">
+      <img src="assets/img/ornaments/ornament-12.png" class="orn" data-id="12">
+    </div>
+  </div>
+
+  <script src="tree.js"></script>
 </body>
 </html>
