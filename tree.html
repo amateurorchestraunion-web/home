@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Decorate The Tree</title>
-<link rel="stylesheet" href="./assets/css/tree.css">
+<link rel="stylesheet" href="./tree.css" />
 </head>
 <body class="panel-open">
 
@@ -12,27 +12,27 @@
 
   <!-- 트리 영역 -->
   <div id="tree-area">
-    <img id="tree-img" src="./assets/img/tree.png">
+    <img id="tree-img" src="./assets/img/tree.png" />
   </div>
 
   <!-- 오너먼트 패널 -->
   <div id="panel">
     <span class="close-panel">✕</span>
     <h3>오너먼트 선택</h3>
+
     <div class="ornament-grid" id="ornament-grid"></div>
   </div>
 
 </div>
 
-<!-- 패널 축소 버튼 -->
+<!-- 플로팅 버튼 -->
 <div id="floating-btn">
-  <img src="./assets/img/bulb.png">
+  <img src="./assets/img/bulb.png" />
 </div>
 
 <!-- 팝업 오버레이 -->
 <div id="popup-overlay">
   <div id="memo-popup">
-
     <div class="popup-top">
       <button class="delete-btn">🗑 삭제</button>
       <span class="close-popup">✕</span>
@@ -41,13 +41,12 @@
     <div id="memo-list"></div>
 
     <div class="memo-input-area">
-      <input type="text" class="memo-input" placeholder="메모를 입력하세요">
+      <input type="text" class="memo-input" placeholder="메모를 입력하세요" />
       <button class="memo-send-btn">보내기</button>
     </div>
-
   </div>
 </div>
 
-<script type="module" src="./assets/js/tree.js"></script>
+<script type="module" src="./tree.js"></script>
 </body>
 </html>
