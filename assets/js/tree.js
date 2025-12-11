@@ -179,5 +179,129 @@ onSnapshot(collection(db, "ornaments"), (snapshot) => {
   });
 });
 
+/* ============================================================
+   팝업 열기
+============================================================ */
+function openPopup(id) {
+  currentOrnamentId = id;
+  popupOverlay.style.display = "flex";
+  loadMemoList();
+}
 
-/* 이하 메모 기능은 동일하므로 생략 (원래 코드 그대로 사용하면 됨) */
+/* ============================================================
+   팝업 닫기
+============================================================ */
+closePopupBtn.onclick = () => {
+  popupOverlay.style.display = "none";
+};
+
+
+/* ============================================================
+   메모 불러오기
+============================================================ */
+async function loadMemoList() {
+  memoListBox.innerHTML = "";
+
+  const memoCol = collection(db, "ornaments", currentOrnamentId, "memoList");
+
+  onSnapshot(memoCol, async (snapshot) => {
+    memoListBox.innerHTML = "";
+
+    // 메모 없으면 hasMemo = false로 업데이트
+    if (snapshot.empty) {
+      await setDoc(
+        doc(db, "ornaments", currentOrnamentId),
+        { hasMemo: false },
+        { merge: true }
+      );
+    }
+
+    snapshot.docs
+      .sort((a, b) => a.data().timestamp - b.data().timestamp)
+      .forEach((docu) => {
+        const d = docu.data();
+
+        const box = document.createElement("div");
+        box.className = "memo-item";
+
+        const t = new Date(d.timestamp).toLocaleString("ko-KR");
+
+        box.innerHTML = `
+          <div class="memo-timestamp">${t}</div>
+          <div>${d.text}</div>
+        `;
+
+        const delBtn = document.createElement("span");
+        delBtn.className = "delete-memo-btn";
+        delBtn.textContent = "✕";
+
+        delBtn.onclick = async () => {
+          if (confirm("메모를 삭제하시겠습니까?")) {
+            await deleteDoc(
+              doc(db, "ornaments", currentOrnamentId, "memoList", docu.id)
+            );
+          }
+        };
+
+        box.appendChild(delBtn);
+        memoListBox.appendChild(box);
+      });
+  });
+}
+
+/* ============================================================
+   메모 입력
+============================================================ */
+memoInput.addEventListener("keydown", (e) => {
+  // Shift+Enter → 줄바꿈
+  if (e.key === "Enter" && e.shiftKey) return;
+
+  // Enter → 전송
+  if (e.key === "Enter") {
+    e.preventDefault();
+    sendBtn.click();
+  }
+});
+
+sendBtn.onclick = async () => {
+  const text = memoInput.value.trim();
+  if (!text) return;
+
+  const memoId = doc(collection(db, "ornaments", currentOrnamentId, "memoList")).id;
+
+  await setDoc(doc(db, "ornaments", currentOrnamentId, "memoList", memoId), {
+    text,
+    timestamp: Date.now()
+  });
+
+  await setDoc(
+    doc(db, "ornaments", currentOrnamentId),
+    { hasMemo: true },
+    { merge: true }
+  );
+
+  memoInput.value = "";
+};
+
+
+/* ============================================================
+   오너먼트 삭제
+============================================================ */
+deleteBtn.onclick = async () => {
+  const ref = doc(db, "ornaments", currentOrnamentId);
+  const snap = await getDoc(ref);
+
+  if (!snap.exists()) return;
+
+  if (snap.data().hasMemo) {
+    alert("메모가 없을 때만 삭제 가능합니다.");
+    return;
+  }
+
+  if (confirm("정말 삭제하시겠습니까?")) {
+    await deleteDoc(ref);
+    popupOverlay.style.display = "none";
+    currentOrnamentId = null;
+  }
+};
+
