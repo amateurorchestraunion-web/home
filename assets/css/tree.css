@@ -142,6 +142,10 @@ body.panel-closed #panel {
 .close-popup {
   font-size: 22px;
   cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  background: white; /* 있으면 더 버튼같음, 빼도 OK */
 }
 
 #memo-list {
@@ -160,6 +164,9 @@ body.panel-closed #panel {
   display: flex;
   flex-direction: column;
   position: relative;
+
+  word-break: break-word;       /* ★ 영어도 강제 줄바꿈 */
+  overflow-wrap: break-word;    /* ★ 긴 URL, 긴 문자 다 줄바꿈 */
 }
 
 .memo-item .delete-memo-btn {
