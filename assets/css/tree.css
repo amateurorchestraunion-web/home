@@ -2,34 +2,43 @@ html, body {
   margin: 0;
   height: 100%;
   overflow: hidden;
-  background: #111;
   font-family: "NanumSquareNeo", sans-serif;
 }
 
-/* 전체 레이아웃 */
+/* 레이아웃 기본 구조 */
 .layout {
   display: flex;
   width: 100%;
   height: 100%;
+  overflow: hidden;
 }
 
 /* 트리 영역 */
 #tree-area {
-  width: 100%;
   height: 100%;
+  background: #111;
   position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
   overflow: hidden;
-  background: #111;
-  transition: width .3s ease;
+  transition: width 0.3s ease;
 }
 
 #tree-img {
   max-width: 100%;
   max-height: 100%;
+  user-select: none;
   pointer-events: none;
+}
+
+/* 패널 열림/닫힘 */
+body.panel-open #tree-area {
+  width: 70%;
+}
+
+body.panel-closed #tree-area {
+  width: 100%;
 }
 
 /* 패널 */
@@ -38,18 +47,15 @@ html, body {
   height: 100%;
   background: rgba(255,255,255,0.95);
   border-left: 2px solid #ddd;
-  box-sizing: border-box;
   padding: 16px;
-  overflow-y: auto;
-  display: none;
+  overflow-y: scroll;
+  position: relative;
+  transition: transform 0.3s ease;
 }
 
-body.panel-open #panel {
-  display: block;
-}
-
-body.panel-open #tree-area {
-  width: 70%;
+/* 패널 닫힘 → 화면 밖으로 밀기 */
+body.panel-closed #panel {
+  transform: translateX(100%);
 }
 
 .close-panel {
@@ -72,7 +78,6 @@ body.panel-open #tree-area {
   cursor: grab;
 }
 
-
 /* 플로팅 버튼 */
 #floating-btn {
   position: fixed;
@@ -82,49 +87,40 @@ body.panel-open #tree-area {
   height: 65px;
   border-radius: 50%;
   background: white;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
   display: none;
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
   z-index: 9999;
 }
 
-body.panel-closed #floating-btn {
-  display: flex;
-}
-
-#floating-btn img {
-  width: 70%;
-}
-
+#floating-btn img { width: 70%; }
 
 /* 팝업 오버레이 */
 #popup-overlay {
   position: fixed;
   inset: 0;
   background: rgba(255,255,255,0.2);
-  backdrop-filter: blur(3px);
   display: none;
   justify-content: center;
   align-items: center;
   z-index: 99999;
 }
 
-/* 팝업 */
 #memo-popup {
-  background: white;
+  background: #ffffff;
   border-radius: 20px;
   padding: 20px;
   width: 85%;
   max-width: 480px;
   box-shadow: 0 8px 28px rgba(0,0,0,0.25);
+  position: relative;
   display: flex;
   flex-direction: column;
   max-height: 80vh;
 }
 
-/* 팝업 상단 */
 .popup-top {
   display: flex;
   justify-content: space-between;
@@ -132,12 +128,13 @@ body.panel-closed #floating-btn {
 }
 
 .delete-btn {
-  border: none;
   background: white;
-  padding: 8px 14px;
   border-radius: 12px;
-  cursor: pointer;
+  padding: 6px 12px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  cursor: pointer;
+  font-size: 14px;
+  border: none;
   font-weight: 600;
 }
 
@@ -146,11 +143,11 @@ body.panel-closed #floating-btn {
   cursor: pointer;
 }
 
-/* 메모 */
+/* 메모 리스트 */
 #memo-list {
   flex: 1;
-  overflow-y: auto;
   margin-top: 16px;
+  overflow-y: auto;
 }
 
 .memo-item {
@@ -160,40 +157,51 @@ body.panel-closed #floating-btn {
   margin-bottom: 12px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.15);
   font-size: 14px;
-  display: flex;
-  flex-direction: column;
   position: relative;
 }
 
-.memo-item .delete-memo-btn {
+.memo-timestamp {
+  color: #777;
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+
+/* 메모 삭제 버튼 */
+.delete-memo-btn {
   position: absolute;
   right: 10px;
   top: 10px;
+  font-size: 16px;
   cursor: pointer;
   color: #999;
-  font-size: 16px;
   font-weight: bold;
 }
 
+/* 메모 입력 */
 .memo-input-area {
   display: flex;
+  width: 100%;
   margin-top: 12px;
+  align-items: center;
 }
 
 .memo-input {
   flex: 1;
-  background: #eee;
+  background: #f0f0f0;
   border-radius: 12px;
   border: none;
   padding: 12px;
+  font-size: 14px;
+  outline: none;
 }
 
 .memo-send-btn {
   margin-left: 10px;
-  padding: 10px 14px;
-  border: none;
-  border-radius: 12px;
   background: white;
+  padding: 10px 14px;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  border: none;
   cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  font-weight: 600;
 }
