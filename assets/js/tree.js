@@ -40,17 +40,15 @@ for (let i = 1; i <= 12; i++) {
    2) 패널 열기/닫기
 ============================================================ */
 document.querySelector(".close-panel").onclick = () => {
-  panel.style.display = "none";
-  floatingBtn.style.display = "flex";
-  treeArea.style.width = "100%";
-  panelWasOpen = false;
+  document.body.classList.remove("panel-open"); // 패널 닫기
+    floatingBtn.style.display = "flex";
+    panelWasOpen = false;
 };
 
 floatingBtn.onclick = () => {
-  panel.style.display = "block";
-  floatingBtn.style.display = "none";
-  treeArea.style.width = "70%";
-  panelWasOpen = true;
+  document.body.classList.add("panel-open"); // 패널 열기
+    floatingBtn.style.display = "none";
+    panelWasOpen = true;
 };
 
 /* ============================================================
@@ -183,30 +181,31 @@ onSnapshot(collection(db, "ornaments"), (snapshot) => {
    8) 팝업 열기
 ============================================================ */
 async function openPopup(ornamentId) {
-  currentOrnamentId = ornamentId;
+    currentOrnamentId = ornamentId;
 
-  // 팝업 띄우기
-  popupOverlay.style.display = "flex";
+    popupOverlay.style.display = "flex";
 
-  // 패널 자동 축소
-  panelWasOpen = panel.style.display !== "none";
-  panel.style.display = "none";
-  floatingBtn.style.display = "none";
+    // 패널이 열려있는지 확인 (body 클래스 기반)
+    panelWasOpen = document.body.classList.contains("panel-open");
 
-  loadMemoList();
+    // 패널 숨기기
+    document.body.classList.remove("panel-open");
+    floatingBtn.style.display = "none";
+
+    loadMemoList();
 }
 
 /* ============================================================
    9) 팝업 닫기
 ============================================================ */
 closePopupBtn.onclick = () => {
-  popupOverlay.style.display = "none";
+    popupOverlay.style.display = "none";
 
-  if (panelWasOpen) {
-    panel.style.display = "block";
-  } else {
-    floatingBtn.style.display = "flex";
-  }
+    if (panelWasOpen) {
+        document.body.classList.add("panel-open");  // 원래 열려 있었음
+    } else {
+        floatingBtn.style.display = "flex";         // 닫힌 상태로 유지
+    }
 };
 
 /* ============================================================
