@@ -2147,6 +2147,8 @@ and (device-width: 1366px) and (device-height: 1024px) and (orientation: landsca
 
 .floating-btn img:hover {
   transform: scale(1.08);
+  animation: light-pulse 1.4s infinite alternate ease-in-out;
+
 }
 @keyframes light-pulse {
     0% {
