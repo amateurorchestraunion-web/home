@@ -6,6 +6,7 @@
 <title>Decorate The Tree</title>
 <link rel="stylesheet" href="./assets/css/tree.css" />
 </head>
+
 <body class="panel-open">
 
 <div class="layout">
@@ -15,22 +16,30 @@
     <img id="tree-img" src="./assets/img/tree.png" />
   </div>
 
-  <!-- 오너먼트 패널 -->
+  <!-- ⭐ PC용 오너먼트 패널 -->
   <div id="panel">
     <span class="close-panel">✕</span>
     <h3>오너먼트 선택</h3>
-
     <div class="ornament-grid" id="ornament-grid"></div>
   </div>
 
 </div>
 
-<!-- 플로팅 버튼 -->
+<!-- ⭐ 플로팅 버튼 -->
 <div id="floating-btn">
   <img src="./assets/img/bulb.png" />
 </div>
 
-<!-- 팝업 오버레이 -->
+<!-- ⭐ 모바일용 하단 패널 -->
+<div id="mobile-panel">
+  <div class="mobile-panel-header">
+    <span class="close-mobile">▼ 닫기</span>
+    <h3>오너먼트 선택</h3>
+  </div>
+  <div class="mobile-grid" id="mobile-grid"></div>
+</div>
+
+<!-- ⭐ 메모 팝업 -->
 <div id="popup-overlay">
   <div id="memo-popup">
     <div class="popup-top">
