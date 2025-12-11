@@ -154,11 +154,25 @@ body.panel-closed #floating-btn {
 }
 
 .memo-item {
-  padding: 12px;
+  background: white;
   border-radius: 12px;
-  background: #fff;
+  padding: 12px;
   margin-bottom: 12px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.memo-item .delete-memo-btn {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  cursor: pointer;
+  color: #999;
+  font-size: 16px;
+  font-weight: bold;
 }
 
 .memo-input-area {
