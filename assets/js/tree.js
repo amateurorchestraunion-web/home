@@ -147,15 +147,17 @@ function loadMemoList() {
 
   const memoCol = collection(db, "ornaments", currentOrnamentId, "memoList");
 
-  onSnapshot(memoCol, (snap) => {
+  onSnapshot(memoCol, async (snap) => {
     memoListBox.innerHTML = "";
-    // 🟡 만약 메모가 0개라면 hasMemo를 false로 업데이트
+  
+    // 🔥 메모가 없다면 hasMemo 자동 false 업데이트
     if (snap.empty) {
       await setDoc(
         doc(db, "ornaments", currentOrnamentId),
         { hasMemo: false },
         { merge: true }
       );
+      return; // 메모 없으면 리스트 렌더링도 끝!
     }
     snap.docs
       .sort((a, b) => a.data().timestamp - b.data().timestamp)
