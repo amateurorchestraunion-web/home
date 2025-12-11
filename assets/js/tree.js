@@ -193,8 +193,19 @@ async function loadMemoList() {
 /* ============================================
    메모 입력
 ============================================ */
-memoInput.addEventListener("keydown", e => {
-  if (e.key === "Enter") e.preventDefault();
+memoInput.addEventListener("keydown", (e) => {
+  // Shift+Enter → 줄바꿈 허용
+  if (e.key === "Enter" && e.shiftKey) return;
+
+  // Enter → 전송
+  if (e.key === "Enter") {
+    e.preventDefault();
+
+    const text = memoInput.value.trim();
+    if (!text) return; // 빈 입력 방지
+
+    sendBtn.click();   // 기존 전송 기능 그대로 사용
+  }
 });
 
 sendBtn.onclick = async () => {
