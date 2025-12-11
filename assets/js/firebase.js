@@ -1,7 +1,14 @@
 // firebase.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
 import { 
-  getFirestore, collection, doc, setDoc, getDocs, onSnapshot 
+  getFirestore, 
+  collection, 
+  doc, 
+  setDoc, 
+  getDoc, 
+  deleteDoc, 
+  onSnapshot, 
+  updateDoc 
 } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
 // Firebase 설정
@@ -19,5 +26,14 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// tree.js에서 사용 가능하도록 export
-export { db, collection, doc, setDoc, getDocs, onSnapshot };
+// tree.js에서 사용할 모든 함수 export
+export {
+  db,
+  collection,
+  doc,
+  setDoc,
+  getDoc,
+  deleteDoc,
+  onSnapshot,
+  updateDoc
+};
