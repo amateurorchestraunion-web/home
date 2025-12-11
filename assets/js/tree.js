@@ -46,7 +46,6 @@ for (let i = 1; i <= 12; i++) {
   img.draggable = true;
 
   img.addEventListener("dragstart", (e) => {
-    e.dataTransfer.setData("oid", img.dataset.id);
     e.dataTransfer.setData("src", img.src);
   });
 
@@ -80,7 +79,7 @@ treeArea.addEventListener("drop", async (e) => {
    오너먼트 DOM 생성
 ============================================ */
 function placeOrnament(id, src, x, y) {
-  if (!id || !src || x == null || y == null) return;  // ← 완전 차단
+  if (!id || !src || x == null || y == null) return;
 
   const img = document.createElement("img");
   img.src = src;
@@ -139,18 +138,19 @@ closePopupBtn.onclick = () => {
 
 
 /* ============================================
-   메모 불러오기
+   메모 불러오기 (async 사용 X)
 ============================================ */
-async function loadMemoList() {
+function loadMemoList() {
   memoListBox.innerHTML = "";
 
   const memoCol = collection(db, "ornaments", currentOrnamentId, "memoList");
 
-  onSnapshot(memoCol, async (snapshot) => {
+  onSnapshot(memoCol, (snapshot) => {
     memoListBox.innerHTML = "";
 
+    // 메모가 없으면 hasMemo = false
     if (snapshot.empty) {
-      await setDoc(
+      setDoc(
         doc(db, "ornaments", currentOrnamentId),
         { hasMemo: false },
         { merge: true }
@@ -161,6 +161,7 @@ async function loadMemoList() {
       .sort((a, b) => a.data().timestamp - b.data().timestamp)
       .forEach((docu) => {
         const d = docu.data();
+
         const box = document.createElement("div");
         box.className = "memo-item";
 
@@ -168,7 +169,7 @@ async function loadMemoList() {
 
         box.innerHTML = `
           <div class="memo-timestamp">${t}</div>
-          <div>${d.text}</div>
+          <div class="memo-text">${d.text}</div>
         `;
 
         const delBtn = document.createElement("span");
@@ -189,21 +190,20 @@ async function loadMemoList() {
   });
 }
 
+
 /* ============================================
-   메모 입력
+   메모 입력 (Enter 전송, Shift+Enter 줄바꿈)
 ============================================ */
 memoInput.addEventListener("keydown", (e) => {
-  // Shift+Enter → 줄바꿈 허용
-  if (e.key === "Enter" && e.shiftKey) return;
+  if (e.key === "Enter" && e.shiftKey) {
+    return; // 줄바꿈 허용
+  }
 
-  // Enter → 전송
   if (e.key === "Enter") {
     e.preventDefault();
-
     const text = memoInput.value.trim();
-    if (!text) return; // 빈 입력 방지
-
-    sendBtn.click();   // 기존 전송 기능 그대로 사용
+    if (!text) return;
+    sendBtn.click();
   }
 });
 
@@ -242,6 +242,6 @@ deleteBtn.onclick = async () => {
   if (confirm("정말 삭제하시겠습니까?")) {
     await deleteDoc(ref);
     popupOverlay.style.display = "none";
-    currentOrnamentId = null;   // 🔥 중요
+    currentOrnamentId = null;
   }
 };
