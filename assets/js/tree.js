@@ -142,50 +142,53 @@ closePopupBtn.onclick = () => {
 /* ============================================
    메모 불러오기
 ============================================ */
-function loadMemoList() {
+async function loadMemoList() {
   memoListBox.innerHTML = "";
 
   const memoCol = collection(db, "ornaments", currentOrnamentId, "memoList");
 
-  onSnapshot(memoCol, async (snap) => {
+  onSnapshot(memoCol, async (snapshot) => {
     memoListBox.innerHTML = "";
-  
-    // 🔥 메모가 없다면 hasMemo 자동 false 업데이트
-    if (snap.empty) {
+
+    if (snapshot.empty) {
       await setDoc(
         doc(db, "ornaments", currentOrnamentId),
         { hasMemo: false },
         { merge: true }
       );
-      return; // 메모 없으면 리스트 렌더링도 끝!
     }
-    snap.docs
+
+    snapshot.docs
       .sort((a, b) => a.data().timestamp - b.data().timestamp)
       .forEach((docu) => {
         const d = docu.data();
         const box = document.createElement("div");
         box.className = "memo-item";
 
+        const t = new Date(d.timestamp).toLocaleString("ko-KR");
+
         box.innerHTML = `
-          <div class="memo-timestamp">${new Date(d.timestamp).toLocaleString()}</div>
+          <div class="memo-timestamp">${t}</div>
           <div>${d.text}</div>
         `;
 
-        const del = document.createElement("span");
-        del.textContent = "✕";
-        del.style.float = "right";
-        del.style.cursor = "pointer";
+        const delBtn = document.createElement("span");
+        delBtn.className = "delete-memo-btn";
+        delBtn.textContent = "✕";
 
-        del.onclick = async () => {
-          await deleteDoc(doc(db, "ornaments", currentOrnamentId, "memoList", docu.id));
+        delBtn.onclick = async () => {
+          if (confirm("메모를 삭제하시겠습니까?")) {
+            await deleteDoc(
+              doc(db, "ornaments", currentOrnamentId, "memoList", docu.id)
+            );
+          }
         };
 
-        box.appendChild(del);
+        box.appendChild(delBtn);
         memoListBox.appendChild(box);
       });
   });
 }
-
 
 /* ============================================
    메모 입력
