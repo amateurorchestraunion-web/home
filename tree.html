@@ -5,275 +5,52 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Decorate The Tree</title>
 
-<style>
-  html, body {
-    margin: 0;
-    height: 100%;
-    overflow: hidden;
-    font-family: "NanumSquareNeo", sans-serif;
-  }
+<!-- 스타일 파일 분리 버전 (style.css 사용) -->
+<link rel="stylesheet" href="./assets/css/style.css">
 
-  /* 전체 레이아웃 */
-  .layout {
-    display: flex;
-    width: 100%;
-    height: 100%;
-  }
-
-  /* 트리 영역 */
-  #tree-area {
-    width: 70%;
-    height: 100%;
-    background: #111;
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-  }
-
-  #tree-img {
-    max-width: 100%;
-    max-height: 100%;
-    user-select: none;
-    pointer-events: none;
-  }
-
-  /* 오너먼트 패널 */
-  #panel {
-    width: 30%;
-    height: 100%;
-    background: rgba(255,255,255,0.95);
-    border-left: 2px solid #ddd;
-    padding: 16px;
-    box-sizing: border-box;
-    overflow-y: scroll;
-    position: relative;
-  }
-
-  #panel h3 { margin-top: 0; }
-
-  .close-panel {
-    position: absolute;
-    right: 14px;
-    top: 10px;
-    font-size: 22px;
-    cursor: pointer;
-  }
-
-  .ornament-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
-    margin-top: 24px;
-  }
-
-  .ornament-grid img {
-    width: 100%;
-    cursor: grab;
-  }
-
-  /* 플로팅 버튼 */
-  #floating-btn {
-    position: fixed;
-    right: 20px;
-    bottom: 20px;
-    width: 65px;
-    height: 65px;
-    border-radius: 50%;
-    background: white;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    z-index: 9999;
-  }
-
-  #floating-btn img { width: 70%; }
-
-
-  /* -----------------------------------
-       팝업 오버레이 (흰색 20%)
-  ----------------------------------- */
-  #popup-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(255,255,255,0.2);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 99999;
-  }
-
-  /* 팝업 컨테이너 */
-  #memo-popup {
-    background: #ffffff;
-    border-radius: 20px;
-    padding: 20px;
-    width: 85%;
-    max-width: 480px;
-    box-shadow: 0 8px 28px rgba(0,0,0,0.25);
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    max-height: 80vh;
-  }
-
-  /* 모바일 전용 */
-  @media (max-width: 768px) {
-    #memo-popup {
-      max-width: 330px;
-      padding: 16px;
-      border-radius: 16px;
-    }
-  }
-
-  /* 팝업 상단 버튼 영역 */
-  .popup-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  /* 삭제 버튼 */
-  .delete-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: #ffffff;
-    border-radius: 12px;
-    padding: 6px 12px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-    cursor: pointer;
-    font-weight: 600;
-    border: none;
-    font-size: 14px;
-  }
-
-  .close-popup {
-    font-size: 22px;
-    cursor: pointer;
-    margin-left: 8px;
-  }
-
-  /* 메모 리스트 영역 */
-  #memo-list {
-    flex: 1;
-    margin-top: 16px;
-    overflow-y: auto;
-  }
-
-  .memo-item {
-    background: white;
-    border-radius: 12px;
-    padding: 12px;
-    margin-bottom: 12px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-    font-size: 14px;
-  }
-
-  .memo-timestamp {
-    color: #777;
-    font-size: 12px;
-    margin-bottom: 6px;
-  }
-
-  /* 메모 입력 영역 */
-  .memo-input-area {
-    display: flex;
-    width: 100%;
-    margin-top: 12px;
-    align-items: center;
-  }
-
-  .memo-input {
-    flex: 1;
-    background: #f0f0f0;
-    border-radius: 12px;
-    border: none;
-    padding: 12px;
-    font-size: 14px;
-    outline: none;
-    color: #333;
-  }
-
-  .memo-input::placeholder {
-    color: #999;
-  }
-
-  .memo-send-btn {
-    margin-left: 10px;
-    background: white;
-    padding: 10px 14px;
-    border-radius: 12px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-    cursor: pointer;
-    font-weight: 600;
-    border: none;
-    font-size: 14px;
-    white-space: nowrap;
-  }
-
-
-  /* 모바일에서는 패널 아래로 */
-  @media (max-width: 768px) {
-    .layout { flex-direction: column; }
-
-    #tree-area { width: 100%; height: 60%; }
-
-    #panel {
-      width: 100%;
-      height: 40%;
-      border-left: none;
-      border-top: 2px solid #ddd;
-      overflow-y: scroll;
-    }
-
-    .ornament-grid { grid-template-columns: repeat(5, 1fr); }
-  }
-
-</style>
 </head>
-<body>
+<body class="panel-closed">
 
 <div class="layout">
 
-  <!-- 트리 영역 -->
+  <!-- 🎄 트리 영역 -->
   <div id="tree-area">
-    <img id="tree-img" src="./assets/img/tree.png">
+    <img id="tree-img" src="./assets/img/tree.png" alt="tree">
   </div>
 
-  <!-- 오너먼트 패널 -->
+  <!-- 🎁 오너먼트 패널 -->
   <div id="panel">
     <span class="close-panel">✕</span>
     <h3>오너먼트 선택</h3>
-    <div class="ornament-grid" id="ornament-grid"></div>
+
+    <div class="ornament-grid" id="ornament-grid">
+      <!-- JS에서 오너먼트 자동 생성 -->
+    </div>
   </div>
 
 </div>
 
-<!-- 패널 축소 버튼 -->
+<!-- 💡 플로팅 버튼 (패널 열기) -->
 <div id="floating-btn">
-  <img src="./assets/img/bulb.png">
+  <img src="./assets/img/bulb.png" alt="menu">
 </div>
 
 
-<!-- 팝업 오버레이 -->
+<!-- 📝 팝업 오버레이 -->
 <div id="popup-overlay">
 
-  <!-- 팝업 박스 -->
   <div id="memo-popup">
 
+    <!-- 팝업 상단: 삭제 / 닫기 -->
     <div class="popup-top">
       <button class="delete-btn">🗑 삭제</button>
       <span class="close-popup">✕</span>
     </div>
 
-    <!-- 메모 목록 -->
+    <!-- 메모 리스트 -->
     <div id="memo-list"></div>
 
-    <!-- 입력 영역 -->
+    <!-- 메모 입력 영역 -->
     <div class="memo-input-area">
       <input type="text" class="memo-input" placeholder="메모를 입력하세요">
       <button class="memo-send-btn">보내기</button>
@@ -282,6 +59,7 @@
   </div>
 </div>
 
+<!-- JS -->
 <script type="module" src="./assets/js/tree.js"></script>
 
 </body>
