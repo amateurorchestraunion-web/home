@@ -30,6 +30,15 @@ const BASE_ORNAMENT_SIZE = 60;
 const isMobile = window.matchMedia("(max-width: 768px)").matches;
 
 /* ==============================================
+   ★ 모바일 초기 상태 강제 세팅
+============================================== */
+if (isMobile) {
+  document.body.classList.remove("panel-open");
+  document.body.classList.add("panel-closed");
+  floatingBtn.style.display = "flex";
+}
+
+/* ==============================================
    트리 스케일
 ============================================== */
 function getTreeScale() {
@@ -45,14 +54,19 @@ function getOrnamentSize() {
 ============================================== */
 document.querySelector(".close-panel").onclick = () => {
   if (isMobile) return;
+
   document.body.classList.remove("panel-open");
   document.body.classList.add("panel-closed");
   floatingBtn.style.display = "flex";
+
+  setTimeout(updateAll, 260); // ★ 패널 transition 후 재정렬
 };
 
 closeMobileBtn.onclick = () => {
   mobilePanel.style.bottom = "-40%";
   floatingBtn.style.display = "flex";
+
+  setTimeout(updateAll, 260); // ★ 모바일 패널 닫아도 전체 업데이트
 };
 
 floatingBtn.onclick = () => {
@@ -64,6 +78,8 @@ floatingBtn.onclick = () => {
     document.body.classList.add("panel-open");
     document.body.classList.remove("panel-closed");
   }
+
+  setTimeout(updateAll, 260); // ★ 패널 열기 후 재정렬
 };
 
 /* ==============================================
@@ -119,7 +135,7 @@ function isTooClose(newX, newY, size) {
     const ox = rect.width * xRatio;
     const oy = rect.height * yRatio;
 
-    const dist = Math.sqrt((ox - newX)**2 + (oy - newY)**2);
+    const dist = Math.sqrt((ox - newX) ** 2 + (oy - newY) ** 2);
     if (dist < minDist) return true;
   }
   return false;
@@ -199,7 +215,6 @@ function updateOne(o) {
   o.style.top = `${rect.height * yRatio}px`;
 }
 
-/* 전체 업데이트 */
 function updateAll() {
   document.querySelectorAll(".placed").forEach(updateOne);
 }
