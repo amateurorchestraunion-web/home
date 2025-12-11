@@ -1,111 +1,185 @@
 html, body {
-    margin: 0;
-    height: 100%;
-    overflow: hidden;
-    font-family: "NanumSquareNeo", sans-serif;
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: #111;
+  font-family: "NanumSquareNeo", sans-serif;
 }
 
 /* 전체 레이아웃 */
 .layout {
-    display: flex;
-    width: 100%;
-    height: 100%;
-    transition: width 0.3s ease;
+  display: flex;
+  width: 100%;
+  height: 100%;
 }
 
 /* 트리 영역 */
 #tree-area {
-    width: 70%;
-    height: 100%;
-    background: #111;
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-    transition: width 0.3s ease;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  background: #111;
+  transition: width .3s ease;
 }
 
-/* 패널 열리면 70% 유지, 패널 닫히면 100% */
-body.panel-open #tree-area {
-    width: 70%;
-}
-body:not(.panel-open) #tree-area {
-    width: 100%;
-}
-
-/* 트리 이미지 */
 #tree-img {
-    max-width: 100%;
-    max-height: 100%;
-    user-select: none;
-    pointer-events: none;
+  max-width: 100%;
+  max-height: 100%;
+  pointer-events: none;
 }
 
-/* 오너먼트 패널 */
+/* 패널 */
 #panel {
-    width: 30%;
-    height: 100%;
-    background: rgba(255,255,255,0.95);
-    border-left: 2px solid #ddd;
-    padding: 16px;
-    box-sizing: border-box;
-    display: none; /* 기본 닫힘 */
-    overflow-y: scroll;
-    position: relative;
+  width: 30%;
+  height: 100%;
+  background: rgba(255,255,255,0.95);
+  border-left: 2px solid #ddd;
+  box-sizing: border-box;
+  padding: 16px;
+  overflow-y: auto;
+  display: none;
 }
 
-/* 패널이 열렸을 때 표시 */
 body.panel-open #panel {
-    display: block;
+  display: block;
+}
+
+body.panel-open #tree-area {
+  width: 70%;
 }
 
 .close-panel {
-    position: absolute;
-    right: 14px;
-    top: 10px;
-    font-size: 22px;
-    cursor: pointer;
+  position: absolute;
+  right: 14px;
+  top: 10px;
+  font-size: 22px;
+  cursor: pointer;
 }
 
 .ornament-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
-    margin-top: 24px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-top: 24px;
 }
 
 .ornament-grid img {
-    width: 100%;
-    cursor: grab;
+  width: 100%;
+  cursor: grab;
 }
+
 
 /* 플로팅 버튼 */
 #floating-btn {
-    position: fixed;
-    right: 20px;
-    bottom: 20px;
-    width: 65px;
-    height: 65px;
-    border-radius: 50%;
-    background: white;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    z-index: 9999;
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
+  background: white;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  z-index: 9999;
 }
 
-#floating-btn img { width: 70%; }
+body.panel-closed #floating-btn {
+  display: flex;
+}
+
+#floating-btn img {
+  width: 70%;
+}
+
 
 /* 팝업 오버레이 */
 #popup-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(255,255,255,0.2);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 99999;
+  position: fixed;
+  inset: 0;
+  background: rgba(255,255,255,0.2);
+  backdrop-filter: blur(3px);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999;
+}
+
+/* 팝업 */
+#memo-popup {
+  background: white;
+  border-radius: 20px;
+  padding: 20px;
+  width: 85%;
+  max-width: 480px;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.25);
+  display: flex;
+  flex-direction: column;
+  max-height: 80vh;
+}
+
+/* 팝업 상단 */
+.popup-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.delete-btn {
+  border: none;
+  background: white;
+  padding: 8px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  font-weight: 600;
+}
+
+.close-popup {
+  font-size: 22px;
+  cursor: pointer;
+}
+
+/* 메모 */
+#memo-list {
+  flex: 1;
+  overflow-y: auto;
+  margin-top: 16px;
+}
+
+.memo-item {
+  padding: 12px;
+  border-radius: 12px;
+  background: #fff;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.memo-input-area {
+  display: flex;
+  margin-top: 12px;
+}
+
+.memo-input {
+  flex: 1;
+  background: #eee;
+  border-radius: 12px;
+  border: none;
+  padding: 12px;
+}
+
+.memo-send-btn {
+  margin-left: 10px;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 12px;
+  background: white;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
