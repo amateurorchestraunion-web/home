@@ -2125,6 +2125,7 @@ and (device-width: 1366px) and (device-height: 1024px) and (orientation: landsca
   font-size: 1rem !important;
 }
 
+
 /* 크리스마스 이벤트 25년 12월 */
 .floating-btn {
   position: fixed;
@@ -2146,4 +2147,16 @@ and (device-width: 1366px) and (device-height: 1024px) and (orientation: landsca
 
 .floating-btn img:hover {
   transform: scale(1.08);
+}
+@keyframes light-pulse {
+    0% {
+        box-shadow: 
+          0 0 10px rgba(255,230,150,0.4),
+          0 0 20px rgba(255,230,150,0.2);
+    }
+    100% {
+        box-shadow: 
+          0 0 18px rgba(255,230,150,0.8),
+          0 0 32px rgba(255,230,150,0.5);
+    }
 }
