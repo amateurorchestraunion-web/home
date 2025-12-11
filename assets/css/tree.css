@@ -1,0 +1,55 @@
+body {
+  margin: 0;
+  background: #3f2e1e;
+  display: flex;
+  justify-content: center;
+  font-family: sans-serif;
+}
+
+.tree-container {
+  position: relative;
+  margin-top: 30px;
+}
+
+#tree {
+  width: 450px;
+}
+
+.ornament-panel {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #ffffffdd;
+  padding: 15px;
+  border-radius: 12px;
+}
+
+.ornament {
+  width: 50px;
+  height: 50px;
+  margin: 4px;
+  cursor: grab;
+}
+
+.placed {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  width: 300px;
+  margin: 150px auto;
+  border-radius: 10px;
+}
