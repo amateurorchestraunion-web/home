@@ -17,27 +17,25 @@ html, body {
   height: 100%;
   background: #111;
   position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   overflow: hidden;
   transition: width 0.25s ease;
-}
 
-body.panel-open #tree-area {
-  width: 70%;
-}
-
-body.panel-closed #tree-area {
-  width: 100% !important;
+  /* ❌ flex 제거! — 트리를 중앙 배치시키면 좌표계가 깨짐 */
+  display: block;
 }
 
 #tree-img {
-  max-width: 100%;
-  max-height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+
+  width: 100%;      /* ← 트리 항상 부모 기준으로 100% */
+  height: auto;
+
   pointer-events: none;
   user-select: none;
 }
+
 
 /* ========== 오너먼트 패널 ========== */
 #panel {
