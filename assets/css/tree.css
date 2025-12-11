@@ -1,131 +1,111 @@
-body {
-  margin: 0;
-  overflow: hidden; /* 전체 스크롤 금지 */
-  background: #2a1e1a;
-  display: flex;
+html, body {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+    font-family: "NanumSquareNeo", sans-serif;
 }
 
-/* 🌲 트리 영역 */
-.tree-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  transition: width 0.3s ease;
-  background: #2a1e1a;
+/* 전체 레이아웃 */
+.layout {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    transition: width 0.3s ease;
 }
 
-/* 패널 열렸을 때 → 70% */
-body.panel-open .tree-container {
-  width: 70vw;
+/* 트리 영역 */
+#tree-area {
+    width: 70%;
+    height: 100%;
+    background: #111;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    transition: width 0.3s ease;
 }
 
-/* 패널 닫힘 → 100% */
-body:not(.panel-open) .tree-container {
-  width: 100vw;
+/* 패널 열리면 70% 유지, 패널 닫히면 100% */
+body.panel-open #tree-area {
+    width: 70%;
+}
+body:not(.panel-open) #tree-area {
+    width: 100%;
 }
 
-#tree {
-  height: 100vh;
-  width: auto;
-  object-fit: contain;
+/* 트리 이미지 */
+#tree-img {
+    max-width: 100%;
+    max-height: 100%;
+    user-select: none;
+    pointer-events: none;
 }
 
-/* 🎁 오른쪽 패널 */
-.ornament-panel {
-  width: 30vw;
-  height: 100vh;
-  background: #ffffffdd;
-  backdrop-filter: blur(4px);
-  position: relative;
-  transition: right 0.3s ease;
-  overflow-y: scroll;
+/* 오너먼트 패널 */
+#panel {
+    width: 30%;
+    height: 100%;
+    background: rgba(255,255,255,0.95);
+    border-left: 2px solid #ddd;
+    padding: 16px;
+    box-sizing: border-box;
+    display: none; /* 기본 닫힘 */
+    overflow-y: scroll;
+    position: relative;
 }
 
-.panel-header {
-  display: flex;
-  justify-content: space-between;
-  padding: 12px;
-  font-size: 18px;
-  font-weight: bold;
+/* 패널이 열렸을 때 표시 */
+body.panel-open #panel {
+    display: block;
 }
 
-.close-btn {
-  background: none;
-  border: none;
-  font-size: 22px;
-  cursor: pointer;
+.close-panel {
+    position: absolute;
+    right: 14px;
+    top: 10px;
+    font-size: 22px;
+    cursor: pointer;
 }
 
 .ornament-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-  padding: 12px;
-}
-
-.orn {
-  width: 60px;
-  height: 60px;
-  cursor: grab;
-}
-
-/* ⭐ 플로팅 오너먼트 버튼 */
-.floating-btn {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 70px;
-  height: 70px;
-  background: white;
-  border-radius: 50%;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.hidden { display: none; }
-
-/* 📱 모바일 슬라이드 패널 */
-@media (max-width: 768px) {
-
-  body.panel-open .tree-container {
-    width: 100vw; /* 모바일에서는 트리가 항상 100% */
-  }
-
-  .ornament-panel { display: none; }
-
-  #mobilePanel {
-    position: fixed;
-    bottom: -40%;
-    height: 40%;
-    width: 100%;
-    background: #ffffffee;
-    backdrop-filter: blur(6px);
-    border-radius: 20px 20px 0 0;
-    transition: bottom 0.3s ease;
-  }
-
-  #mobilePanel.open {
-    bottom: 0;
-  }
-
-  .mobile-header {
-    display: flex;
-    justify-content: space-between;
-    padding: 12px;
-    font-size: 18px;
-    font-weight: bold;
-  }
-
-  .mobile-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 10px;
-    padding: 12px;
-    overflow-y: scroll;
-    height: calc(100% - 50px);
-  }
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.ornament-grid img {
+    width: 100%;
+    cursor: grab;
+}
+
+/* 플로팅 버튼 */
+#floating-btn {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    background: white;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 9999;
+}
+
+#floating-btn img { width: 70%; }
+
+/* 팝업 오버레이 */
+#popup-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(255,255,255,0.2);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
 }
