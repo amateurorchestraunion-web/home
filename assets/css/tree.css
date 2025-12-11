@@ -75,9 +75,21 @@ body.panel-closed #panel {
   gap: 12px;
   margin-top: 24px;
 }
-
+.ornament-grid div {
+  width: 100%;
+  aspect-ratio: 1 / 1;     /* ← 정사각형 칸 강제 */
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 .ornament-grid img {
   width: 100%;
+  height: 100%;
+  object-fit: contain;   /* 이미지 비율 유지하며 정사각형 칸에 맞춤 */
+  padding: 4px;          /* 너무 꽉 차보이지 않게 여백 */
   cursor: grab;
 }
 
