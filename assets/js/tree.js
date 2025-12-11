@@ -114,7 +114,17 @@ treeArea.addEventListener("drop", async (e) => {
   }
 
   const ornamentDoc = doc(collection(db, "ornaments"));
-  await setDoc(ornamentDoc, { id: ornamentDoc.id, src, x, y, hasMemo: false });
+  const treeRect = treeImg.getBoundingClientRect();
+  const xRatio = x / treeRect.width;
+  const yRatio = y / treeRect.height;
+  
+  await setDoc(ornamentDoc, { 
+    id: ornamentDoc.id, 
+    src, 
+    xRatio, 
+    yRatio, 
+    hasMemo: false 
+  });
 
   placeOrnament(ornamentDoc.id, src, x, y);
 });
@@ -137,8 +147,13 @@ function placeOrnament(id, src, x, y) {
   img.classList.add("placed");
   img.style.position = "absolute";
   img.style.width = `${size}px`;
-  img.style.left = `${x}px`;
-  img.style.top = `${y}px`;
+  
+  const rect = treeImg.getBoundingClientRect();
+  const actualX = rect.left + rect.width * xRatio;
+  const actualY = rect.top + rect.height * yRatio;
+  
+  img.style.left = `${actualX}px`;
+  img.style.top = `${actualY}px`;
   img.style.transform = "translate(-50%, -50%)";
 
   img.addEventListener("click", () => openPopup(id));
@@ -160,6 +175,29 @@ window.addEventListener("resize", () => {
 });
 
 
+/* ============================================================
+   화면 크기 변화 시 오너먼트 재배치
+============================================================ */
+window.addEventListener("resize", () => updateAllOrnaments());
+
+function updateAllOrnaments() {
+  const ornaments = document.querySelectorAll(".placed");
+
+  ornaments.forEach((o) => {
+    const xRatio = parseFloat(o.dataset.xratio);
+    const yRatio = parseFloat(o.dataset.yratio);
+
+    const rect = treeImg.getBoundingClientRect();
+    const newX = rect.width * xRatio;
+    const newY = rect.height * yRatio;
+
+    const size = getOrnamentSize();
+
+    o.style.width = `${size}px`;
+    o.style.left = `${newX}px`;
+    o.style.top = `${newY}px`;
+  });
+}
 /* ============================================================
    Firestore 실시간 반영
 ============================================================ */
