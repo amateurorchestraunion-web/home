@@ -42,12 +42,14 @@ for (let i = 1; i <= 12; i++) {
 document.querySelector(".close-panel").onclick = () => {
   panel.style.display = "none";
   floatingBtn.style.display = "flex";
+  treeArea.style.width = "100%";
   panelWasOpen = false;
 };
 
 floatingBtn.onclick = () => {
   panel.style.display = "block";
   floatingBtn.style.display = "none";
+  treeArea.style.width = "70%";
   panelWasOpen = true;
 };
 
