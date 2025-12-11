@@ -80,8 +80,7 @@ treeArea.addEventListener("drop", async (e) => {
    오너먼트 DOM 생성
 ============================================ */
 function placeOrnament(id, src, x, y) {
-
-  if (!id || !src) return;  // 🔥 ghost bug 완전 차단
+  if (!id || !src || x == null || y == null) return;  // ← 완전 차단
 
   const img = document.createElement("img");
   img.src = src;
@@ -243,5 +242,6 @@ deleteBtn.onclick = async () => {
   if (confirm("정말 삭제하시겠습니까?")) {
     await deleteDoc(ref);
     popupOverlay.style.display = "none";
+    currentOrnamentId = null;   // 🔥 중요
   }
 };
