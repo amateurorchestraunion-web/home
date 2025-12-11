@@ -40,12 +40,14 @@ for (let i = 1; i <= 12; i++) {
 document.querySelector(".close-panel").onclick = () => {
   document.body.classList.remove("panel-open");
   document.body.classList.add("panel-closed");
+  floatingBtn.style.display = "flex";
 };
 
 /* 패널 열기 (플로팅 버튼 클릭) */
 floatingBtn.onclick = () => {
   document.body.classList.add("panel-open");
   document.body.classList.remove("panel-closed");
+  floatingBtn.style.display = "none";
 };
 
 /* 트리 드래그&드롭 */
@@ -130,7 +132,13 @@ function loadMemoList() {
 
   onSnapshot(memoCol, (snapshot) => {
     memoListBox.innerHTML = "";
-
+    // 🟡 만약 메모가 0개라면 hasMemo를 false로 업데이트
+    if (snapshot.empty) {
+      await setDoc(
+        doc(db, "ornaments", currentOrnamentId),
+        { hasMemo: false },
+        { merge: true }
+      );
     snapshot.docs
       .sort((a, b) => a.data().timestamp - b.data().timestamp)
       .forEach((docu) => {
@@ -145,9 +153,9 @@ function loadMemoList() {
         `;
 
         const delBtn = document.createElement("span");
+        delBtn.className = "delete-memo-btn";
         delBtn.textContent = "✕";
-        delBtn.style.float = "right";
-        delBtn.style.cursor = "pointer";
+
 
         delBtn.onclick = async () => {
           await deleteDoc(
