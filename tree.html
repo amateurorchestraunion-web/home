@@ -1,71 +1,288 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <title>크리스마스트리 꾸미기</title>
-  <link rel="stylesheet" href="tree.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Decorate The Tree</title>
+
+<style>
+  html, body {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+    font-family: "NanumSquareNeo", sans-serif;
+  }
+
+  /* 전체 레이아웃 */
+  .layout {
+    display: flex;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* 트리 영역 */
+  #tree-area {
+    width: 70%;
+    height: 100%;
+    background: #111;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  #tree-img {
+    max-width: 100%;
+    max-height: 100%;
+    user-select: none;
+    pointer-events: none;
+  }
+
+  /* 오너먼트 패널 */
+  #panel {
+    width: 30%;
+    height: 100%;
+    background: rgba(255,255,255,0.95);
+    border-left: 2px solid #ddd;
+    padding: 16px;
+    box-sizing: border-box;
+    overflow-y: scroll;
+    position: relative;
+  }
+
+  #panel h3 { margin-top: 0; }
+
+  .close-panel {
+    position: absolute;
+    right: 14px;
+    top: 10px;
+    font-size: 22px;
+    cursor: pointer;
+  }
+
+  .ornament-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-top: 24px;
+  }
+
+  .ornament-grid img {
+    width: 100%;
+    cursor: grab;
+  }
+
+  /* 플로팅 버튼 */
+  #floating-btn {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    background: white;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 9999;
+  }
+
+  #floating-btn img { width: 70%; }
+
+
+  /* -----------------------------------
+       팝업 오버레이 (흰색 20%)
+  ----------------------------------- */
+  #popup-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(255,255,255,0.2);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
+  }
+
+  /* 팝업 컨테이너 */
+  #memo-popup {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 20px;
+    width: 85%;
+    max-width: 480px;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.25);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    max-height: 80vh;
+  }
+
+  /* 모바일 전용 */
+  @media (max-width: 768px) {
+    #memo-popup {
+      max-width: 330px;
+      padding: 16px;
+      border-radius: 16px;
+    }
+  }
+
+  /* 팝업 상단 버튼 영역 */
+  .popup-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  /* 삭제 버튼 */
+  .delete-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 6px 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    cursor: pointer;
+    font-weight: 600;
+    border: none;
+    font-size: 14px;
+  }
+
+  .close-popup {
+    font-size: 22px;
+    cursor: pointer;
+    margin-left: 8px;
+  }
+
+  /* 메모 리스트 영역 */
+  #memo-list {
+    flex: 1;
+    margin-top: 16px;
+    overflow-y: auto;
+  }
+
+  .memo-item {
+    background: white;
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    font-size: 14px;
+  }
+
+  .memo-timestamp {
+    color: #777;
+    font-size: 12px;
+    margin-bottom: 6px;
+  }
+
+  /* 메모 입력 영역 */
+  .memo-input-area {
+    display: flex;
+    width: 100%;
+    margin-top: 12px;
+    align-items: center;
+  }
+
+  .memo-input {
+    flex: 1;
+    background: #f0f0f0;
+    border-radius: 12px;
+    border: none;
+    padding: 12px;
+    font-size: 14px;
+    outline: none;
+    color: #333;
+  }
+
+  .memo-input::placeholder {
+    color: #999;
+  }
+
+  .memo-send-btn {
+    margin-left: 10px;
+    background: white;
+    padding: 10px 14px;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    cursor: pointer;
+    font-weight: 600;
+    border: none;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+
+
+  /* 모바일에서는 패널 아래로 */
+  @media (max-width: 768px) {
+    .layout { flex-direction: column; }
+
+    #tree-area { width: 100%; height: 60%; }
+
+    #panel {
+      width: 100%;
+      height: 40%;
+      border-left: none;
+      border-top: 2px solid #ddd;
+      overflow-y: scroll;
+    }
+
+    .ornament-grid { grid-template-columns: repeat(5, 1fr); }
+  }
+
+</style>
 </head>
+<body>
 
-<body class="panel-open">
+<div class="layout">
 
-  <!-- 🌲 트리 영역 -->
-  <div class="tree-container">
-    <img id="tree" src="assets/img/tree.png" alt="tree">
+  <!-- 트리 영역 -->
+  <div id="tree-area">
+    <img id="tree-img" src="./assets/tree.png">
   </div>
 
-  <!-- 🎁 오너먼트 패널 (PC용 30%) -->
-  <div id="ornamentPanel" class="ornament-panel">
-    <div class="panel-header">
-      <span>오너먼트 선택</span>
-      <button id="closePanel" class="close-btn">✕</button>
-    </div>
-
-    <div class="ornament-grid">
-      <!-- 오너먼트 이미지들 -->
-      <img src="assets/img/ornaments/ornament-01.png" class="orn" data-id="01">
-      <img src="assets/img/ornaments/ornament-02.png" class="orn" data-id="02">
-      <img src="assets/img/ornaments/ornament-03.png" class="orn" data-id="03">
-      <img src="assets/img/ornaments/ornament-04.png" class="orn" data-id="04">
-      <img src="assets/img/ornaments/ornament-05.png" class="orn" data-id="05">
-      <img src="assets/img/ornaments/ornament-06.png" class="orn" data-id="06">
-      <img src="assets/img/ornaments/ornament-07.png" class="orn" data-id="07">
-      <img src="assets/img/ornaments/ornament-08.png" class="orn" data-id="08">
-      <img src="assets/img/ornaments/ornament-09.png" class="orn" data-id="09">
-      <img src="assets/img/ornaments/ornament-10.png" class="orn" data-id="10">
-      <img src="assets/img/ornaments/ornament-11.png" class="orn" data-id="11">
-      <img src="assets/img/ornaments/ornament-12.png" class="orn" data-id="12">
-    </div>
+  <!-- 오너먼트 패널 -->
+  <div id="panel">
+    <span class="close-panel">✕</span>
+    <h3>오너먼트 선택</h3>
+    <div class="ornament-grid" id="ornament-grid"></div>
   </div>
 
-  <!-- ⭐ 패널이 닫혔을 때 나타나는 플로팅 아이콘 -->
-  <div id="floatingOrnamentBtn" class="floating-btn hidden">
-    <img src="assets/img/bulb.png" alt="오너먼트">
-  </div>
+</div>
 
-  <!-- 📱 모바일 슬라이드 패널 -->
-  <div id="mobilePanel" class="mobile-panel">
-    <div class="mobile-header">
-      <span>오너먼트 선택</span>
-      <button id="closeMobilePanel" class="close-btn">✕</button>
+<!-- 패널 축소 버튼 -->
+<div id="floating-btn">
+  <img src="./assets/bulb.png">
+</div>
+
+
+<!-- 팝업 오버레이 -->
+<div id="popup-overlay">
+
+  <!-- 팝업 박스 -->
+  <div id="memo-popup">
+
+    <div class="popup-top">
+      <button class="delete-btn">🗑 삭제</button>
+      <span class="close-popup">✕</span>
     </div>
 
-    <div class="mobile-grid">
-      <!-- 모바일용 오너먼트 동일하게 -->
-      <img src="assets/img/ornaments/ornament-01.png" class="orn" data-id="01">
-      <img src="assets/img/ornaments/ornament-02.png" class="orn" data-id="02">
-      <img src="assets/img/ornaments/ornament-03.png" class="orn" data-id="03">
-      <img src="assets/img/ornaments/ornament-04.png" class="orn" data-id="04">
-      <img src="assets/img/ornaments/ornament-05.png" class="orn" data-id="05">
-      <img src="assets/img/ornaments/ornament-06.png" class="orn" data-id="06">
-      <img src="assets/img/ornaments/ornament-07.png" class="orn" data-id="07">
-      <img src="assets/img/ornaments/ornament-08.png" class="orn" data-id="08">
-      <img src="assets/img/ornaments/ornament-09.png" class="orn" data-id="09">
-      <img src="assets/img/ornaments/ornament-10.png" class="orn" data-id="10">
-      <img src="assets/img/ornaments/ornament-11.png" class="orn" data-id="11">
-      <img src="assets/img/ornaments/ornament-12.png" class="orn" data-id="12">
-    </div>
-  </div>
+    <!-- 메모 목록 -->
+    <div id="memo-list"></div>
 
-  <script src="tree.js"></script>
+    <!-- 입력 영역 -->
+    <div class="memo-input-area">
+      <input type="text" class="memo-input" placeholder="메모를 입력하세요">
+      <button class="memo-send-btn">보내기</button>
+    </div>
+
+  </div>
+</div>
+
+<script type="module" src="./tree.js"></script>
+
 </body>
 </html>
