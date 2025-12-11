@@ -213,3 +213,58 @@ body.panel-closed #panel {
   box-shadow: 0 2px 6px rgba(0,0,0,0.15);
   cursor: pointer;
 }
+
+/* ========== 모바일 패널 ========== */
+#mobile-panel {
+  position: fixed;
+  bottom: -40%;
+  left: 0;
+  width: 100%;
+  height: 40%;
+  background: white;
+  box-shadow: 0 -4px 10px rgba(0,0,0,0.2);
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  z-index: 99999;
+  transition: bottom 0.3s ease;
+  padding: 12px;
+  display: none;
+}
+
+.mobile-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.close-mobile {
+  cursor: pointer;
+  font-size: 16px;
+  color: #444;
+}
+
+.mobile-grid {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+
+.mobile-grid img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: white;
+  border-radius: 8px;
+  padding: 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+@media (max-width: 768px) {
+  #mobile-panel {
+    display: block;
+  }
+  #panel {
+    display: none !important;
+  }
+}
