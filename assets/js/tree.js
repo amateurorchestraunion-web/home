@@ -21,10 +21,10 @@ let panelWasOpen = true;
 /* ============================================================
    1) 오너먼트 10개 자동 생성
 ============================================================ */
-for (let i = 1; i <= 10; i++) {
+for (let i = 1; i <= 12; i++) {
   let img = document.createElement("img");
   const num = i.toString().padStart(2, "0");
-  img.src = `./assets/ornaments/ornament-${num}.png`;
+  img.src = `./assets/img/ornaments/ornament-${num}.png`;
   img.dataset.id = `ornament_${num}`;
   img.draggable = true;
 
