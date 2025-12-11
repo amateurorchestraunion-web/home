@@ -149,7 +149,14 @@ function loadMemoList() {
 
   onSnapshot(memoCol, (snap) => {
     memoListBox.innerHTML = "";
-
+    // 🟡 만약 메모가 0개라면 hasMemo를 false로 업데이트
+    if (snapshot.empty) {
+      await setDoc(
+        doc(db, "ornaments", currentOrnamentId),
+        { hasMemo: false },
+        { merge: true }
+      );
+    }
     snap.docs
       .sort((a, b) => a.data().timestamp - b.data().timestamp)
       .forEach((docu) => {
