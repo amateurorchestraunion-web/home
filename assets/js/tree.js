@@ -1,7 +1,7 @@
 import { 
   db, collection, doc, setDoc, getDoc, deleteDoc, onSnapshot
 } from "./firebase.js";
-
+console.log("Tree.js loaded");
 const treeArea = document.getElementById("tree-area");
 const ornamentGrid = document.getElementById("ornament-grid");
 const panel = document.getElementById("panel");
