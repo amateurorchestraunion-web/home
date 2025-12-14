@@ -239,7 +239,7 @@ body.panel-closed #panel {
   position: fixed;
   left: 0;
   bottom: 0;
-  width: 100%;
+  width: 100vw;
   height: 0;            /* ← 닫힐 때 공간 0 */
   background: white;
   overflow: hidden;     /* height = 0일 때 내용 숨김 */
