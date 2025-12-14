@@ -408,27 +408,29 @@ deleteBtn.onclick = async () => {
 
   const el = document.querySelector(`[data-oid="${id}"]`);
   if (el) {
-    el.dataset.animating = "1"; // snapshot에서 실수로 삭제되지 않도록 보호
+    // snapshot에서 중복 제거를 막기 위해 플래그 설정
+    el.dataset.animating = "1";
 
     const src = el.src;
 
+    // ornament-08 전용 효과
     if (src.includes("ornament-08")) {
       el.classList.add("ornament-08-dust");
     } else {
       el.classList.add("ornament-default-fade");
     }
 
-    el.addEventListener(
-      "animationend",
-      () => {
-        el.remove();
-      },
-      { once: true }
-    );
+    el.addEventListener("animationend", () => {
+      el.remove();
+    }, { once: true });
   }
 
+  // Firestore 삭제
   await deleteDoc(ref);
 
+  // popup 닫기
   popupOverlay.style.display = "none";
+  
+  // ★★★ 여기에서 초기화해야 함 — DOM 삭제 이후!
   currentOrnamentId = null;
 };
