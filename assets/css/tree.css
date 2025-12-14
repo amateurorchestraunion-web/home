@@ -5,33 +5,42 @@ html, body {
   font-family: "NanumSquareNeo", sans-serif;
 }
 
-/* 레이아웃 전체 */
+/* ===============================================
+   레이아웃 전체
+=============================================== */
 .layout {
   display: flex;
   width: 100%;
   height: 100%;
 }
 
-/* ========== 트리 영역 ========== */
+/* ===============================================
+   트리 영역
+=============================================== */
 #tree-area {
   width: 70%;
   height: 100%;
   background: #111;
   position: relative;
   overflow: hidden;
-  transition: width 0.25s ease;
+  transition: width 0.25s ease, height 0.3s ease;
 }
 
-/* 패널 닫히면 트리 전체 확장 */
 body.panel-closed #tree-area {
   width: 100%;
 }
 
-/* ========== 트리 이미지 ========== */
-/*
-  flex 중앙정렬 제거 → offset 흔들림 사라짐
-  transform 기반 중앙정렬로 오너먼트 좌표 100% 일치
-*/
+body.mobile-panel-open #tree-area {
+  height: 60%; /* 모바일 패널 열리면 트리 높이 축소 */
+}
+
+body:not(.mobile-panel-open) #tree-area {
+  height: 100%; /* 기본값: 트리 전체 확장 */
+}
+
+/* ===============================================
+   트리 이미지 (중앙 고정 + 흔들림 제거)
+=============================================== */
 #tree-img {
   position: absolute;
   top: 50%;
@@ -40,17 +49,13 @@ body.panel-closed #tree-area {
   max-width: 100%;
   max-height: 100%;
   display: block;
-
   pointer-events: none;
   user-select: none;
 }
 
-/* ==========================================
-   오너먼트는 tree-area의 좌표계를 따라감
-   tree-img는 absolute이므로, 오너먼트가 정확한 offset 반영 가능
-========================================== */
-
-/* ========== 패널 (PC) ========== */
+/* ===============================================
+   PC 패널
+=============================================== */
 #panel {
   width: 30%;
   height: 100%;
@@ -86,7 +91,7 @@ body.panel-closed #panel {
 
 .ornament-grid div {
   width: 100%;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 1;
   background: white;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
@@ -102,7 +107,9 @@ body.panel-closed #panel {
   cursor: grab;
 }
 
-/* ========== Bulb 버튼 ========== */
+/* ===============================================
+   Bulb 버튼
+=============================================== */
 #floating-btn {
   position: fixed;
   right: 20px;
@@ -123,7 +130,9 @@ body.panel-closed #panel {
   width: 70%;
 }
 
-/* ========== 팝업 오버레이 ========== */
+/* ===============================================
+   팝업
+=============================================== */
 #popup-overlay {
   position: fixed;
   inset: 0;
@@ -134,7 +143,6 @@ body.panel-closed #panel {
   z-index: 99999;
 }
 
-/* 팝업 */
 #memo-popup {
   background: white;
   border-radius: 20px;
@@ -171,102 +179,75 @@ body.panel-closed #panel {
   background: white;
 }
 
-/* 메모 리스트 */
+/* ========== 메모 리스트 ========== */
 #memo-list {
   flex: 1;
   margin-top: 16px;
   overflow-y: auto;
 }
 
-.memo-item {
-  background: white;
-  border-radius: 12px;
-  padding: 12px;
-  margin-bottom: 12px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-  position: relative;
-  font-size: 14px;
-  word-break: break-word;
-  overflow-wrap: break-word;
-}
-
-.memo-item .delete-memo-btn {
-  position: absolute;
-  right: 8px;
-  top: 8px;
-  font-size: 16px;
-  cursor: pointer;
-  color: #999;
-}
-
-/* 메모 입력 */
-.memo-input-area {
-  display: flex;
-  gap: 10px;
-}
-
-.memo-input {
-  flex: 1;
-  padding: 12px;
-  background: #f0f0f0;
-  border-radius: 12px;
-  border: none;
-}
-
-.memo-send-btn {
-  padding: 12px 16px;
-  background: white;
-  border-radius: 12px;
-  border: none;
-  cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-}
-
-/* ========== 모바일 패널 ONLY ========== */
+/* ========== Mobile Panel (핵심 수정 적용됨) ========== */
 #mobile-panel {
   position: fixed;
-  bottom: -40%;
   left: 0;
+  bottom: 0;
   width: 100%;
-  height: 40%;
+  height: 0;            /* ← 닫힐 때 공간 0 */
   background: white;
+  overflow: hidden;     /* height = 0일 때 내용 숨김 */
   border-top-left-radius: 16px;
   border-top-right-radius: 16px;
+  padding: 0;           /* 닫힐 때 padding 제거 */
   box-shadow: 0 -4px 10px rgba(0,0,0,0.2);
+  transition: height 0.3s ease, padding 0.3s ease;
   z-index: 99999;
-  padding: 16px;
-  transition: bottom 0.3s ease;
   display: none;
 }
 
+#mobile-panel.open {
+  height: 40%;          /* 열릴 때만 공간 차지 */
+  padding: 16px;        /* 열릴 때 padding 복구 */
+}
+
+/* ========== 모바일 패널 헤더 (제목 왼쪽 + 닫기 오른쪽) ========== */
 .mobile-panel-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.close-mobile {
+.mobile-panel-header h3 {
+  margin: 0;
   font-size: 18px;
+}
+
+.close-mobile {
+  font-size: 16px;
   cursor: pointer;
 }
 
+/* ========== 모바일 오너먼트 그리드 (정사각형 + 스크롤 + 그림자) ========== */
 .mobile-grid {
-  margin-top: 16px;
+  margin-top: 12px;
+  height: calc(100% - 60px);
+  overflow-y: auto;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 10px;
+  padding-right: 4px;
 }
 
-.mobile-grid img {
+.mobile-grid-item img {
   width: 100%;
-  height: 100%;
+  aspect-ratio: 1;
   object-fit: contain;
   background: white;
-  border-radius: 8px;
-  padding: 4px;
+  border-radius: 10px;
+  padding: 6px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
 }
 
-/* ========== 모바일 환경에서만 적용 ========== */
+/* ========== 모바일 환경 설정 ========== */
 @media (max-width: 768px) {
   .layout {
     display: block;
@@ -274,7 +255,6 @@ body.panel-closed #panel {
 
   #tree-area {
     width: 100% !important;
-    height: calc(100% - 40%) !important;
   }
 
   #panel {
@@ -285,7 +265,8 @@ body.panel-closed #panel {
     display: block !important;
   }
 }
-/* 모바일 long-press 드래그 고스트 */
+
+/* ========== Long Press Drag Ghost ========== */
 .drag-ghost {
   position: fixed;
   width: 60px;
