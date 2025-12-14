@@ -2,7 +2,7 @@ import {
   db, collection, doc, setDoc, getDoc, deleteDoc, onSnapshot
 } from "./firebase.js";
 
-console.log("Tree.js loaded");
+console.log("tree v/1 loaded");
 
 const treeArea = document.getElementById("tree-area");
 const treeImg = document.getElementById("tree-img");
