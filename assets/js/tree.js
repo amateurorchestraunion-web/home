@@ -39,7 +39,7 @@ if (isMobile) {
 }
 
 /* ==============================================
-   트리 스케일 계산
+   스케일 계산
 ============================================== */
 function getTreeScale() {
   return treeImg.clientWidth / treeImg.naturalWidth;
@@ -54,7 +54,6 @@ function getOrnamentSize() {
 ============================================== */
 document.querySelector(".close-panel").onclick = () => {
   if (isMobile) return;
-
   document.body.classList.add("panel-closed");
   document.body.classList.remove("panel-open");
 
@@ -181,7 +180,7 @@ function addMobileLongPressDrag(img) {
     const rect = treeImg.getBoundingClientRect();
     if (
       t.clientX < rect.left || t.clientX > rect.right ||
-      t.clientY < rect.top || t.clientY > rect.bottom
+      t.clientY < rect.top  || t.clientY > rect.bottom
     ) return;
 
     const xRatio = (t.clientX - rect.left) / rect.width;
@@ -212,6 +211,7 @@ treeArea.addEventListener("drop", async (e) => {
   if (!src) return;
 
   const rect = treeImg.getBoundingClientRect();
+
   const xRatio = (e.clientX - rect.left) / rect.width;
   const yRatio = (e.clientY - rect.top) / rect.height;
 
@@ -244,13 +244,14 @@ function placeOrnament(id, src, xRatio, yRatio) {
 
   updateOne(o);
 
+  // 팝업 열기
   o.addEventListener("click", () => openPopup(id));
 
   treeImg.parentElement.appendChild(o);
 }
 
 /* ==============================================
-   위치 재계산
+   위치 재계산 (resize 대응)
 ============================================== */
 function updateOne(o) {
   const areaRect = treeArea.getBoundingClientRect();
@@ -262,7 +263,7 @@ function updateOne(o) {
   const offsetY = imgRect.top - areaRect.top;
 
   o.style.left = offsetX + imgRect.width * parseFloat(o.dataset.xRatio) + "px";
-  o.style.top = offsetY + imgRect.height * parseFloat(o.dataset.yRatio) + "px";
+  o.style.top  = offsetY + imgRect.height * parseFloat(o.dataset.yRatio) + "px";
 }
 
 function updateAll() {
@@ -273,7 +274,7 @@ window.addEventListener("resize", updateAll);
 new ResizeObserver(updateAll).observe(treeImg);
 
 /* ==============================================
-   Firestore Sync (실시간 반영)
+   🔄 Firestore Sync (실시간 반영)
 ============================================== */
 onSnapshot(collection(db, "ornaments"), (snap) => {
   const parent = treeImg.parentElement;
@@ -281,14 +282,18 @@ onSnapshot(collection(db, "ornaments"), (snap) => {
   snap.docChanges().forEach((ch) => {
     const d = ch.doc.data();
 
+    // 신규 오너먼트 등장
     if (ch.type === "added") {
       if (!parent.querySelector(`[data-oid="${d.id}"]`)) {
         placeOrnament(d.id, d.src, d.xRatio, d.yRatio);
       }
     }
 
+    // 삭제된 오너먼트 (UI에서도 제거)
     if (ch.type === "removed") {
       const el = parent.querySelector(`[data-oid="${ch.doc.id}"]`);
+
+      // 삭제 애니메이션 중이면 여기서 지우지 않음
       if (el && !el.dataset.animating) {
         el.remove();
       }
@@ -297,7 +302,7 @@ onSnapshot(collection(db, "ornaments"), (snap) => {
 });
 
 /* ==============================================
-   팝업
+   팝업 열기
 ============================================== */
 function openPopup(id) {
   currentOrnamentId = id;
@@ -305,7 +310,9 @@ function openPopup(id) {
   loadMemoList();
 }
 
-closePopupBtn.onclick = () => (popupOverlay.style.display = "none");
+closePopupBtn.onclick = () => {
+  popupOverlay.style.display = "none";
+};
 
 /* ==============================================
    메모 로드
@@ -332,9 +339,7 @@ async function loadMemoList() {
       const box = document.createElement("div");
       box.className = "memo-item";
       box.innerHTML = `
-        <div class="memo-timestamp">${new Date(
-          d.timestamp
-        ).toLocaleString()}</div>
+        <div class="memo-timestamp">${new Date(d.timestamp).toLocaleString()}</div>
         <div>${d.text}</div>
       `;
 
@@ -344,9 +349,7 @@ async function loadMemoList() {
 
       del.onclick = async () => {
         if (confirm("메모를 삭제하시겠습니까?")) {
-          await deleteDoc(
-            doc(db, "ornaments", currentOrnamentId, "memoList", docu.id)
-          );
+          await deleteDoc(doc(db, "ornaments", currentOrnamentId, "memoList", docu.id));
         }
       };
 
@@ -370,14 +373,12 @@ sendBtn.onclick = async () => {
   const text = memoInput.value.trim();
   if (!text) return;
 
-  const memoId = doc(
-    collection(db, "ornaments", currentOrnamentId, "memoList")
-  ).id;
+  const memoId = doc(collection(db, "ornaments", currentOrnamentId, "memoList")).id;
 
-  await setDoc(doc(db, "ornaments", currentOrnamentId, "memoList", memoId), {
-    text,
-    timestamp: Date.now(),
-  });
+  await setDoc(
+    doc(db, "ornaments", currentOrnamentId, "memoList", memoId),
+    { text, timestamp: Date.now() }
+  );
 
   await setDoc(
     doc(db, "ornaments", currentOrnamentId),
@@ -407,13 +408,11 @@ deleteBtn.onclick = async () => {
   if (!confirm("정말 삭제하시겠습니까?")) return;
 
   const el = document.querySelector(`[data-oid="${id}"]`);
+  const src = snap.data().src;
+
   if (el) {
-    // snapshot에서 중복 제거를 막기 위해 플래그 설정
-    el.dataset.animating = "1";
+    el.dataset.animating = "1"; // Firestore Sync에서 제거될 때 중복 방지
 
-    const src = el.src;
-
-    // ornament-08 전용 효과
     if (src.includes("ornament-08")) {
       el.classList.add("ornament-08-dust");
     } else {
@@ -425,12 +424,8 @@ deleteBtn.onclick = async () => {
     }, { once: true });
   }
 
-  // Firestore 삭제
   await deleteDoc(ref);
 
-  // popup 닫기
   popupOverlay.style.display = "none";
-  
-  // ★★★ 여기에서 초기화해야 함 — DOM 삭제 이후!
   currentOrnamentId = null;
 };
