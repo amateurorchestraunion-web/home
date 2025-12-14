@@ -34,12 +34,12 @@ const isMobile = window.matchMedia("(max-width: 768px)").matches;
 ============================================== */
 if (isMobile) {
   floatingBtn.style.display = "flex";
-  document.body.classList.remove("panel-open");
   document.body.classList.add("panel-closed");
+  document.body.classList.remove("panel-open");
 }
 
 /* ==============================================
-   트리 스케일
+   트리 스케일 계산
 ============================================== */
 function getTreeScale() {
   return treeImg.clientWidth / treeImg.naturalWidth;
@@ -50,20 +50,26 @@ function getOrnamentSize() {
 }
 
 /* ==============================================
-   패널 열기 / 닫기
+   PC 패널 열기/닫기
 ============================================== */
 document.querySelector(".close-panel").onclick = () => {
   if (isMobile) return;
-  document.body.classList.remove("panel-open");
+  
   document.body.classList.add("panel-closed");
+  document.body.classList.remove("panel-open");
+
   floatingBtn.style.display = "flex";
   setTimeout(updateAll, 260);
 };
 
+/* ==============================================
+   모바일 패널 열기/닫기 (height 기반)
+============================================== */
 closeMobileBtn.onclick = () => {
-  mobilePanel.style.bottom = "-40%";
+  mobilePanel.classList.remove("open");
   document.body.classList.remove("mobile-panel-open");
   floatingBtn.style.display = "flex";
+
   setTimeout(updateAll, 260);
 };
 
@@ -71,7 +77,7 @@ floatingBtn.onclick = () => {
   floatingBtn.style.display = "none";
 
   if (isMobile) {
-    mobilePanel.style.bottom = "0";
+    mobilePanel.classList.add("open");
     document.body.classList.add("mobile-panel-open");
   } else {
     document.body.classList.add("panel-open");
@@ -82,7 +88,7 @@ floatingBtn.onclick = () => {
 };
 
 /* ==============================================
-   PC용 오너먼트 생성
+   PC 오너먼트 이미지 생성
 ============================================== */
 function createOrnament(src, id) {
   const wrapper = document.createElement("div");
@@ -107,27 +113,26 @@ for (let i = 1; i <= 12; i++) {
   const src = `./assets/img/ornaments/ornament-${num}.png`;
   const id = `orn_${num}`;
 
-  /* PC */
+  /* ▶ PC */
   ornamentGrid.appendChild(createOrnament(src, id));
 
-  /* 모바일 (long press drag) */
-  const item = document.createElement("div");
-  item.className = "mobile-grid-item";
+  /* ▶ 모바일 long-press용 */
+  const wrap = document.createElement("div");
+  wrap.className = "mobile-grid-item";
 
   const img = document.createElement("img");
   img.src = src;
   img.dataset.id = id;
   img.draggable = false;
 
-  item.appendChild(img);
-  mobileGrid.appendChild(item);
+  wrap.appendChild(img);
+  mobileGrid.appendChild(wrap);
 
-  // 모바일 전용 터치 이벤트 추가
   addMobileLongPressDrag(img);
 }
 
 /* ==============================================
-   모바일 Long Press Drag 구현
+   ★ 모바일 Long Press Drag
 ============================================== */
 
 let longPressTimer = null;
@@ -136,13 +141,15 @@ let dragGhost = null;
 let dragSrc = null;
 
 function addMobileLongPressDrag(img) {
+  img.addEventListener("contextmenu", (e) => e.preventDefault()); 
+  img.addEventListener("touchstart", (e) => e.preventDefault(), { passive: false });
+
   img.addEventListener("touchstart", (e) => {
     dragSrc = img.src;
 
     longPressTimer = setTimeout(() => {
       isDragging = true;
 
-      // ghost 생성
       dragGhost = document.createElement("img");
       dragGhost.src = dragSrc;
       dragGhost.classList.add("drag-ghost");
@@ -151,7 +158,7 @@ function addMobileLongPressDrag(img) {
       const touch = e.touches[0];
       dragGhost.style.left = touch.clientX + "px";
       dragGhost.style.top = touch.clientY + "px";
-    }, 350); // long press threshold
+    }, 350);
   });
 
   img.addEventListener("touchmove", (e) => {
@@ -161,15 +168,13 @@ function addMobileLongPressDrag(img) {
     dragGhost.style.left = touch.clientX + "px";
     dragGhost.style.top = touch.clientY + "px";
 
-    e.preventDefault(); // 드래그 중 스크롤 막기
+    e.preventDefault();
   });
 
   img.addEventListener("touchend", async (e) => {
     clearTimeout(longPressTimer);
 
-    if (!isDragging || !dragGhost) {
-      return; // long press 이전 touchend → 스크롤 처리
-    }
+    if (!isDragging || !dragGhost) return;
 
     const touch = e.changedTouches[0];
     const x = touch.clientX;
@@ -177,14 +182,10 @@ function addMobileLongPressDrag(img) {
 
     dragGhost.remove();
     dragGhost = null;
-
     isDragging = false;
 
-    // 트리 위인지 검사
     const rect = treeImg.getBoundingClientRect();
-    if (x < rect.left || x > rect.right || y < rect.top || y > rect.bottom) {
-      return;
-    }
+    if (x < rect.left || x > rect.right || y < rect.top || y > rect.bottom) return;
 
     const localX = x - rect.left;
     const localY = y - rect.top;
@@ -208,7 +209,7 @@ function addMobileLongPressDrag(img) {
 /* ==============================================
    PC 드롭 이벤트
 ============================================== */
-treeArea.addEventListener("dragover", (e) => e.preventDefault());
+treeArea.addEventListener("dragover", e => e.preventDefault());
 
 treeArea.addEventListener("drop", async (e) => {
   e.preventDefault();
@@ -236,7 +237,7 @@ treeArea.addEventListener("drop", async (e) => {
 });
 
 /* ==============================================
-   오너먼트 DOM 생성
+   오너먼트 생성
 ============================================== */
 function placeOrnament(id, src, xRatio, yRatio) {
   const img = document.createElement("img");
@@ -250,7 +251,6 @@ function placeOrnament(id, src, xRatio, yRatio) {
   img.style.transform = "translate(-50%, -50%)";
 
   updateOne(img);
-
   img.addEventListener("click", () => openPopup(id));
 
   treeImg.parentElement.appendChild(img);
@@ -266,8 +266,7 @@ function updateOne(o) {
   const xRatio = parseFloat(o.dataset.xRatio);
   const yRatio = parseFloat(o.dataset.yRatio);
 
-  const size = getOrnamentSize();
-  o.style.width = `${size}px`;
+  o.style.width = `${getOrnamentSize()}px`;
 
   const offsetX = imgRect.left - areaRect.left;
   const offsetY = imgRect.top - areaRect.top;
@@ -281,17 +280,15 @@ function updateAll() {
 }
 
 window.addEventListener("resize", updateAll);
-
-const resizeObserver = new ResizeObserver(() => updateAll());
-resizeObserver.observe(treeImg);
+new ResizeObserver(updateAll).observe(treeImg);
 
 /* ==============================================
    Firestore Sync
 ============================================== */
-onSnapshot(collection(db, "ornaments"), (snapshot) => {
+onSnapshot(collection(db, "ornaments"), (snap) => {
   const parent = treeImg.parentElement;
 
-  snapshot.docChanges().forEach((ch) => {
+  snap.docChanges().forEach((ch) => {
     const d = ch.doc.data();
 
     if (ch.type === "added") {
@@ -326,14 +323,14 @@ async function loadMemoList() {
 
   const memoCol = collection(db, "ornaments", currentOrnamentId, "memoList");
 
-  onSnapshot(memoCol, async (snapshot) => {
+  onSnapshot(memoCol, async (snap) => {
     memoListBox.innerHTML = "";
 
-    if (snapshot.empty) {
+    if (snap.empty) {
       await setDoc(doc(db, "ornaments", currentOrnamentId), { hasMemo: false }, { merge: true });
     }
 
-    snapshot.forEach((docu) => {
+    snap.forEach((docu) => {
       const d = docu.data();
 
       const box = document.createElement("div");
@@ -343,17 +340,17 @@ async function loadMemoList() {
         <div>${d.text}</div>
       `;
 
-      const delBtn = document.createElement("span");
-      delBtn.className = "delete-memo-btn";
-      delBtn.textContent = "✕";
+      const del = document.createElement("span");
+      del.className = "delete-memo-btn";
+      del.textContent = "✕";
 
-      delBtn.onclick = async () => {
+      del.onclick = async () => {
         if (confirm("메모를 삭제하시겠습니까?")) {
           await deleteDoc(doc(db, "ornaments", currentOrnamentId, "memoList", docu.id));
         }
       };
 
-      box.appendChild(delBtn);
+      box.appendChild(del);
       memoListBox.appendChild(box);
     });
   });
