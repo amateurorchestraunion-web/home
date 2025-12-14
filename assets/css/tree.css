@@ -401,3 +401,49 @@ body.panel-closed #panel {
 .ornament-default-fade {
   animation: ornamentFadeOut 0.35s ease-out forwards;
 }
+
+/* ===============================================
+   🌟 기본 오너먼트 발광 + 흔들림 (대롱대롱)
+=============================================== */
+.placed {
+  animation: ornamentGlow 2.2s ease-in-out infinite,
+             ornamentSwing 2.8s ease-in-out infinite;
+  transform-origin: top center; /* 흔들릴 때 고정점 */
+}
+
+/* 은은한 빛 */
+@keyframes ornamentGlow {
+  0%   { filter: drop-shadow(0 0 3px rgba(255,255,255,0.35)); }
+  50%  { filter: drop-shadow(0 0 6px rgba(255,255,255,0.55)); }
+  100% { filter: drop-shadow(0 0 3px rgba(255,255,255,0.35)); }
+}
+
+/* 살짝 좌우로 흔들림 */
+@keyframes ornamentSwing {
+  0%   { transform: translate(-50%, -50%) rotate(-2deg); }
+  50%  { transform: translate(-50%, -50%) rotate(2deg); }
+  100% { transform: translate(-50%, -50%) rotate(-2deg); }
+}
+
+/* ===============================================
+   ✨ Hover 시 효과 강화
+=============================================== */
+.placed:hover {
+  animation: ornamentGlowStrong 1.4s ease-in-out infinite,
+             ornamentSwingStrong 1.6s ease-in-out infinite;
+  z-index: 9999; /* 위로 올라오도록 */
+}
+
+/* 강한 빛 */
+@keyframes ornamentGlowStrong {
+  0%   { filter: drop-shadow(0 0 6px rgba(255,255,255,0.6)); }
+  50%  { filter: drop-shadow(0 0 12px rgba(255,255,255,0.9)); }
+  100% { filter: drop-shadow(0 0 6px rgba(255,255,255,0.6)); }
+}
+
+/* 더 크게 흔들림 */
+@keyframes ornamentSwingStrong {
+  0%   { transform: translate(-50%, -50%) rotate(-5deg) scale(1.05); }
+  50%  { transform: translate(-50%, -50%) rotate(5deg) scale(1.05); }
+  100% { transform: translate(-50%, -50%) rotate(-5deg) scale(1.05); }
+}
