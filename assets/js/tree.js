@@ -142,9 +142,10 @@ let dragSrc = null;
 
 function addMobileLongPressDrag(img) {
   img.addEventListener("contextmenu", (e) => e.preventDefault()); 
-  img.addEventListener("touchstart", (e) => e.preventDefault(), { passive: false });
 
   img.addEventListener("touchstart", (e) => {
+    e.preventDefault();  // ★ 반드시 passive:false 상태에서만 가능!
+
     dragSrc = img.src;
 
     longPressTimer = setTimeout(() => {
@@ -159,17 +160,20 @@ function addMobileLongPressDrag(img) {
       dragGhost.style.left = touch.clientX + "px";
       dragGhost.style.top = touch.clientY + "px";
     }, 350);
-  });
+  }, { passive: false }); // ★ touchstart는 단 하나만 — 이 옵션 필수!
+
 
   img.addEventListener("touchmove", (e) => {
-    if (!isDragging || !dragGhost) return;
-
-    const touch = e.touches[0];
-    dragGhost.style.left = touch.clientX + "px";
-    dragGhost.style.top = touch.clientY + "px";
-
-    e.preventDefault();
+      // long-press로 드래그가 이미 활성화된 경우만 스크롤을 막는다
+      if (isDragging && dragGhost) {
+          const touch = e.touches[0];
+          dragGhost.style.left = touch.clientX + "px";
+          dragGhost.style.top = touch.clientY + "px";
+          e.preventDefault(); 
+      }
+      // long-press가 아니면 스크롤을 허용 (preventDefault 제거)
   });
+
 
   img.addEventListener("touchend", async (e) => {
     clearTimeout(longPressTimer);
