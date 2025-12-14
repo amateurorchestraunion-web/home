@@ -59,14 +59,14 @@ document.querySelector(".close-panel").onclick = () => {
   document.body.classList.add("panel-closed");
   floatingBtn.style.display = "flex";
 
-  setTimeout(updateAll, 260); // ★ 패널 transition 후 재정렬
+  setTimeout(updateAll, 260);
 };
 
 closeMobileBtn.onclick = () => {
   mobilePanel.style.bottom = "-40%";
   floatingBtn.style.display = "flex";
 
-  setTimeout(updateAll, 260); // ★ 모바일 패널 닫아도 전체 업데이트
+  setTimeout(updateAll, 260);
 };
 
 floatingBtn.onclick = () => {
@@ -79,7 +79,7 @@ floatingBtn.onclick = () => {
     document.body.classList.remove("panel-closed");
   }
 
-  setTimeout(updateAll, 260); // ★ 패널 열기 후 재정렬
+  setTimeout(updateAll, 260);
 };
 
 /* ==============================================
@@ -123,7 +123,7 @@ for (let i = 1; i <= 12; i++) {
    오너먼트 간 거리 검사
 ============================================== */
 function isTooClose(newX, newY, size) {
-  const ornaments = treeArea.querySelectorAll(".placed");
+  const ornaments = treeImg.parentElement.querySelectorAll(".placed");
   const minDist = size * 0.5;
 
   const rect = treeImg.getBoundingClientRect();
@@ -197,22 +197,27 @@ function placeOrnament(id, src, xRatio, yRatio) {
 
   img.addEventListener("click", () => openPopup(id));
 
-  treeArea.appendChild(img);
+  treeImg.parentElement.appendChild(img);
 }
 
 /* ==============================================
    오너먼트 위치 업데이트
 ============================================== */
 function updateOne(o) {
-  const rect = treeImg.getBoundingClientRect();
+  const areaRect = treeArea.getBoundingClientRect();
+  const imgRect = treeImg.getBoundingClientRect();
+
   const xRatio = parseFloat(o.dataset.xRatio);
   const yRatio = parseFloat(o.dataset.yRatio);
 
   const size = getOrnamentSize();
   o.style.width = `${size}px`;
 
-  o.style.left = `${rect.width * xRatio}px`;
-  o.style.top = `${rect.height * yRatio}px`;
+  const offsetX = imgRect.left - areaRect.left;
+  const offsetY = imgRect.top - areaRect.top;
+
+  o.style.left = offsetX + imgRect.width * xRatio + "px";
+  o.style.top  = offsetY + imgRect.height * yRatio + "px";
 }
 
 function updateAll() {
@@ -222,20 +227,28 @@ function updateAll() {
 window.addEventListener("resize", updateAll);
 
 /* ==============================================
+   ★ 이미지 렌더링 크기 변화 감지 → 완벽한 재정렬
+============================================== */
+const resizeObserver = new ResizeObserver(() => updateAll());
+resizeObserver.observe(treeImg);
+
+/* ==============================================
    Firestore Sync
 ============================================== */
 onSnapshot(collection(db, "ornaments"), (snapshot) => {
+  const ornamentParent = treeImg.parentElement;
+
   snapshot.docChanges().forEach((ch) => {
     const d = ch.doc.data();
 
     if (ch.type === "added") {
-      if (!treeArea.querySelector(`[data-oid="${d.id}"]`)) {
+      if (!ornamentParent.querySelector(`[data-oid="${d.id}"]`)) {
         placeOrnament(d.id, d.src, d.xRatio, d.yRatio);
       }
     }
 
     if (ch.type === "removed") {
-      const el = treeArea.querySelector(`[data-oid="${ch.doc.id}"]`);
+      const el = ornamentParent.querySelector(`[data-oid="${ch.doc.id}"]`);
       if (el) el.remove();
     }
   });
