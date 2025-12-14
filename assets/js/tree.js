@@ -30,12 +30,12 @@ const BASE_ORNAMENT_SIZE = 60;
 const isMobile = window.matchMedia("(max-width: 768px)").matches;
 
 /* ==============================================
-   ★ 모바일 초기 상태 강제 세팅
+   모바일 초기 UI 설정
 ============================================== */
 if (isMobile) {
+  floatingBtn.style.display = "flex";
   document.body.classList.remove("panel-open");
   document.body.classList.add("panel-closed");
-  floatingBtn.style.display = "flex";
 }
 
 /* ==============================================
@@ -54,18 +54,16 @@ function getOrnamentSize() {
 ============================================== */
 document.querySelector(".close-panel").onclick = () => {
   if (isMobile) return;
-
   document.body.classList.remove("panel-open");
   document.body.classList.add("panel-closed");
   floatingBtn.style.display = "flex";
-
   setTimeout(updateAll, 260);
 };
 
 closeMobileBtn.onclick = () => {
   mobilePanel.style.bottom = "-40%";
+  document.body.classList.remove("mobile-panel-open");
   floatingBtn.style.display = "flex";
-
   setTimeout(updateAll, 260);
 };
 
@@ -74,6 +72,7 @@ floatingBtn.onclick = () => {
 
   if (isMobile) {
     mobilePanel.style.bottom = "0";
+    document.body.classList.add("mobile-panel-open");
   } else {
     document.body.classList.add("panel-open");
     document.body.classList.remove("panel-closed");
@@ -83,7 +82,7 @@ floatingBtn.onclick = () => {
 };
 
 /* ==============================================
-   오너먼트 이미지 생성
+   PC용 오너먼트 생성
 ============================================== */
 function createOrnament(src, id) {
   const wrapper = document.createElement("div");
@@ -100,49 +99,114 @@ function createOrnament(src, id) {
   return wrapper;
 }
 
+/* ==============================================
+   오너먼트 로드 (PC + 모바일)
+============================================== */
 for (let i = 1; i <= 12; i++) {
   const num = i.toString().padStart(2, "0");
   const src = `./assets/img/ornaments/ornament-${num}.png`;
   const id = `orn_${num}`;
 
+  /* PC */
   ornamentGrid.appendChild(createOrnament(src, id));
 
-  const mobileImg = document.createElement("img");
-  mobileImg.src = src;
-  mobileImg.dataset.id = id;
-  mobileImg.draggable = true;
+  /* 모바일 (long press drag) */
+  const item = document.createElement("div");
+  item.className = "mobile-grid-item";
 
-  mobileImg.addEventListener("dragstart", e => {
-    e.dataTransfer.setData("src", src);
+  const img = document.createElement("img");
+  img.src = src;
+  img.dataset.id = id;
+  img.draggable = false;
+
+  item.appendChild(img);
+  mobileGrid.appendChild(item);
+
+  // 모바일 전용 터치 이벤트 추가
+  addMobileLongPressDrag(img);
+}
+
+/* ==============================================
+   모바일 Long Press Drag 구현
+============================================== */
+
+let longPressTimer = null;
+let isDragging = false;
+let dragGhost = null;
+let dragSrc = null;
+
+function addMobileLongPressDrag(img) {
+  img.addEventListener("touchstart", (e) => {
+    dragSrc = img.src;
+
+    longPressTimer = setTimeout(() => {
+      isDragging = true;
+
+      // ghost 생성
+      dragGhost = document.createElement("img");
+      dragGhost.src = dragSrc;
+      dragGhost.classList.add("drag-ghost");
+      document.body.appendChild(dragGhost);
+
+      const touch = e.touches[0];
+      dragGhost.style.left = touch.clientX + "px";
+      dragGhost.style.top = touch.clientY + "px";
+    }, 350); // long press threshold
   });
 
-  mobileGrid.appendChild(mobileImg);
+  img.addEventListener("touchmove", (e) => {
+    if (!isDragging || !dragGhost) return;
+
+    const touch = e.touches[0];
+    dragGhost.style.left = touch.clientX + "px";
+    dragGhost.style.top = touch.clientY + "px";
+
+    e.preventDefault(); // 드래그 중 스크롤 막기
+  });
+
+  img.addEventListener("touchend", async (e) => {
+    clearTimeout(longPressTimer);
+
+    if (!isDragging || !dragGhost) {
+      return; // long press 이전 touchend → 스크롤 처리
+    }
+
+    const touch = e.changedTouches[0];
+    const x = touch.clientX;
+    const y = touch.clientY;
+
+    dragGhost.remove();
+    dragGhost = null;
+
+    isDragging = false;
+
+    // 트리 위인지 검사
+    const rect = treeImg.getBoundingClientRect();
+    if (x < rect.left || x > rect.right || y < rect.top || y > rect.bottom) {
+      return;
+    }
+
+    const localX = x - rect.left;
+    const localY = y - rect.top;
+
+    const xRatio = localX / rect.width;
+    const yRatio = localY / rect.height;
+
+    const ornamentDoc = doc(collection(db, "ornaments"));
+    await setDoc(ornamentDoc, {
+      id: ornamentDoc.id,
+      src: dragSrc,
+      xRatio,
+      yRatio,
+      hasMemo: false
+    });
+
+    placeOrnament(ornamentDoc.id, dragSrc, xRatio, yRatio);
+  });
 }
 
 /* ==============================================
-   오너먼트 간 거리 검사
-============================================== */
-function isTooClose(newX, newY, size) {
-  const ornaments = treeImg.parentElement.querySelectorAll(".placed");
-  const minDist = size * 0.5;
-
-  const rect = treeImg.getBoundingClientRect();
-
-  for (const o of ornaments) {
-    const xRatio = parseFloat(o.dataset.xRatio);
-    const yRatio = parseFloat(o.dataset.yRatio);
-
-    const ox = rect.width * xRatio;
-    const oy = rect.height * yRatio;
-
-    const dist = Math.sqrt((ox - newX) ** 2 + (oy - newY) ** 2);
-    if (dist < minDist) return true;
-  }
-  return false;
-}
-
-/* ==============================================
-   드롭 이벤트
+   PC 드롭 이벤트
 ============================================== */
 treeArea.addEventListener("dragover", (e) => e.preventDefault());
 
@@ -155,12 +219,6 @@ treeArea.addEventListener("drop", async (e) => {
   const rect = treeImg.getBoundingClientRect();
   const x = e.clientX - rect.left;
   const y = e.clientY - rect.top;
-
-  const size = getOrnamentSize();
-  if (isTooClose(x, y, size)) {
-    alert("오너먼트가 너무 가까워요!");
-    return;
-  }
 
   const xRatio = x / rect.width;
   const yRatio = y / rect.height;
@@ -181,8 +239,6 @@ treeArea.addEventListener("drop", async (e) => {
    오너먼트 DOM 생성
 ============================================== */
 function placeOrnament(id, src, xRatio, yRatio) {
-  if (!id || !src) return;
-
   const img = document.createElement("img");
   img.src = src;
   img.dataset.oid = id;
@@ -201,7 +257,7 @@ function placeOrnament(id, src, xRatio, yRatio) {
 }
 
 /* ==============================================
-   오너먼트 위치 업데이트
+   오너먼트 위치 재계산
 ============================================== */
 function updateOne(o) {
   const areaRect = treeArea.getBoundingClientRect();
@@ -217,7 +273,7 @@ function updateOne(o) {
   const offsetY = imgRect.top - areaRect.top;
 
   o.style.left = offsetX + imgRect.width * xRatio + "px";
-  o.style.top  = offsetY + imgRect.height * yRatio + "px";
+  o.style.top = offsetY + imgRect.height * yRatio + "px";
 }
 
 function updateAll() {
@@ -226,9 +282,6 @@ function updateAll() {
 
 window.addEventListener("resize", updateAll);
 
-/* ==============================================
-   ★ 이미지 렌더링 크기 변화 감지 → 완벽한 재정렬
-============================================== */
 const resizeObserver = new ResizeObserver(() => updateAll());
 resizeObserver.observe(treeImg);
 
@@ -236,19 +289,19 @@ resizeObserver.observe(treeImg);
    Firestore Sync
 ============================================== */
 onSnapshot(collection(db, "ornaments"), (snapshot) => {
-  const ornamentParent = treeImg.parentElement;
+  const parent = treeImg.parentElement;
 
   snapshot.docChanges().forEach((ch) => {
     const d = ch.doc.data();
 
     if (ch.type === "added") {
-      if (!ornamentParent.querySelector(`[data-oid="${d.id}"]`)) {
+      if (!parent.querySelector(`[data-oid="${d.id}"]`)) {
         placeOrnament(d.id, d.src, d.xRatio, d.yRatio);
       }
     }
 
     if (ch.type === "removed") {
-      const el = ornamentParent.querySelector(`[data-oid="${ch.doc.id}"]`);
+      const el = parent.querySelector(`[data-oid="${ch.doc.id}"]`);
       if (el) el.remove();
     }
   });
@@ -263,9 +316,7 @@ function openPopup(id) {
   loadMemoList();
 }
 
-closePopupBtn.onclick = () => {
-  popupOverlay.style.display = "none";
-};
+closePopupBtn.onclick = () => popupOverlay.style.display = "none";
 
 /* ==============================================
    메모 로드
@@ -279,11 +330,7 @@ async function loadMemoList() {
     memoListBox.innerHTML = "";
 
     if (snapshot.empty) {
-      await setDoc(
-        doc(db, "ornaments", currentOrnamentId),
-        { hasMemo: false },
-        { merge: true }
-      );
+      await setDoc(doc(db, "ornaments", currentOrnamentId), { hasMemo: false }, { merge: true });
     }
 
     snapshot.forEach((docu) => {
@@ -302,9 +349,7 @@ async function loadMemoList() {
 
       delBtn.onclick = async () => {
         if (confirm("메모를 삭제하시겠습니까?")) {
-          await deleteDoc(
-            doc(db, "ornaments", currentOrnamentId, "memoList", docu.id)
-          );
+          await deleteDoc(doc(db, "ornaments", currentOrnamentId, "memoList", docu.id));
         }
       };
 
@@ -328,20 +373,13 @@ sendBtn.onclick = async () => {
   const text = memoInput.value.trim();
   if (!text) return;
 
-  const memoId = doc(
-    collection(db, "ornaments", currentOrnamentId, "memoList")
-  ).id;
+  const memoId = doc(collection(db, "ornaments", currentOrnamentId, "memoList")).id;
 
-  await setDoc(
-    doc(db, "ornaments", currentOrnamentId, "memoList", memoId),
-    { text, timestamp: Date.now() }
-  );
+  await setDoc(doc(db, "ornaments", currentOrnamentId, "memoList", memoId),
+    { text, timestamp: Date.now() });
 
-  await setDoc(
-    doc(db, "ornaments", currentOrnamentId),
-    { hasMemo: true },
-    { merge: true }
-  );
+  await setDoc(doc(db, "ornaments", currentOrnamentId),
+    { hasMemo: true }, { merge: true });
 
   memoInput.value = "";
 };
