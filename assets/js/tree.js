@@ -404,4 +404,14 @@ deleteBtn.onclick = async () => {
     popupOverlay.style.display = "none";
     currentOrnamentId = null;
   }
+  // 1) Firestore에서 삭제
+  await deleteDoc(ref);
+
+  // 2) 화면에 있는 오너먼트도 즉시 삭제하여 UI 반응 빠르게 함
+  const el = document.querySelector(`[data-oid="${currentOrnamentId}"]`);
+  if (el) el.remove();
+
+  // 3) 팝업 닫기 + 상태 초기화
+  popupOverlay.style.display = "none";
+  currentOrnamentId = null;
 };
