@@ -350,3 +350,54 @@ body.panel-closed #panel {
   transform: translate(-50%, -50%);
   z-index: 999999;
 }
+
+/* ===============================================
+   🌟 오너먼트 삭제 애니메이션
+=============================================== */
+
+/* 🧨 ornament-08 전용: 푸슛 위로 날아가며 사라짐 */
+@keyframes ornament08Dust {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+    filter: blur(0px);
+  }
+  40% {
+    opacity: 0.9;
+    transform: translate(-50%, -80%) scale(1.1);
+    filter: blur(1px);
+  }
+  70% {
+    opacity: 0.5;
+    transform: translate(-50%, -120%) scale(1.2);
+    filter: blur(3px);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -180%) scale(1.3);
+    filter: blur(6px);
+  }
+}
+
+.ornament-08-dust {
+  animation: ornament08Dust 0.8s ease-out forwards;
+}
+
+/* ===============================================
+   💨 기본 오너먼트 삭제 애니메이션 (부드러운 fade-out)
+=============================================== */
+
+@keyframes ornamentFadeOut {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.7);
+  }
+}
+
+.ornament-default-fade {
+  animation: ornamentFadeOut 0.35s ease-out forwards;
+}
