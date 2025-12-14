@@ -1,5 +1,3 @@
-이게 이전 js인데 크게 달라진게 없나? 없으면 최신화해서 삭제 로직 패치 적용해서 통으로 올려줘
-
 import {
   db, collection, doc, setDoc, getDoc, deleteDoc, onSnapshot
 } from "./firebase.js";
