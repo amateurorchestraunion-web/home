@@ -1,8 +1,10 @@
+이게 이전 js인데 크게 달라진게 없나? 없으면 최신화해서 삭제 로직 패치 적용해서 통으로 올려줘
+
 import {
   db, collection, doc, setDoc, getDoc, deleteDoc, onSnapshot
 } from "./firebase.js";
 
-console.log("tree v/1 loaded");
+console.log("Tree.js loaded");
 
 const treeArea = document.getElementById("tree-area");
 const treeImg = document.getElementById("tree-img");
@@ -68,6 +70,7 @@ closeMobileBtn.onclick = () => {
   mobilePanel.classList.remove("open");
   document.body.classList.remove("mobile-panel-open");
   floatingBtn.style.display = "flex";
+
   setTimeout(updateAll, 260);
 };
 
@@ -91,12 +94,11 @@ floatingBtn.onclick = () => {
 function createOrnament(src, id) {
   const wrap = document.createElement("div");
   const img = document.createElement("img");
-
   img.src = src;
   img.dataset.id = id;
   img.draggable = true;
 
-  img.addEventListener("dragstart", (e) => {
+  img.addEventListener("dragstart", e => {
     e.dataTransfer.setData("src", src);
   });
 
@@ -114,10 +116,8 @@ for (let i = 1; i <= 12; i++) {
 
   ornamentGrid.appendChild(createOrnament(src, id));
 
-  // mobile
   const wrap = document.createElement("div");
   wrap.className = "mobile-grid-item";
-
   const img = document.createElement("img");
   img.src = src;
   img.dataset.id = id;
@@ -130,15 +130,16 @@ for (let i = 1; i <= 12; i++) {
 }
 
 /* ==============================================
-   ★ 모바일 Long Press Drag
+   모바일 Long Press Drag
 ============================================== */
+
 let longPressTimer = null;
 let isDragging = false;
 let dragGhost = null;
 let dragSrc = null;
 
 function addMobileLongPressDrag(img) {
-  img.addEventListener("contextmenu", (e) => e.preventDefault());
+  img.addEventListener("contextmenu", e => e.preventDefault());
 
   img.addEventListener("touchstart", (e) => {
     e.preventDefault();
@@ -170,6 +171,7 @@ function addMobileLongPressDrag(img) {
 
   img.addEventListener("touchend", async (e) => {
     clearTimeout(longPressTimer);
+
     if (!isDragging || !dragGhost) return;
 
     const t = e.changedTouches[0];
@@ -178,22 +180,14 @@ function addMobileLongPressDrag(img) {
     isDragging = false;
 
     const rect = treeImg.getBoundingClientRect();
-    if (
-      t.clientX < rect.left || t.clientX > rect.right ||
-      t.clientY < rect.top  || t.clientY > rect.bottom
-    ) return;
+    if (t.clientX < rect.left || t.clientX > rect.right ||
+        t.clientY < rect.top  || t.clientY > rect.bottom) return;
 
     const xRatio = (t.clientX - rect.left) / rect.width;
     const yRatio = (t.clientY - rect.top) / rect.height;
 
     const ornamentDoc = doc(collection(db, "ornaments"));
-    await setDoc(ornamentDoc, {
-      id: ornamentDoc.id,
-      src: dragSrc,
-      xRatio,
-      yRatio,
-      hasMemo: false,
-    });
+    await setDoc(ornamentDoc, { id: ornamentDoc.id, src: dragSrc, xRatio, yRatio, hasMemo: false });
 
     placeOrnament(ornamentDoc.id, dragSrc, xRatio, yRatio);
   });
@@ -202,7 +196,7 @@ function addMobileLongPressDrag(img) {
 /* ==============================================
    PC 드롭
 ============================================== */
-treeArea.addEventListener("dragover", (e) => e.preventDefault());
+treeArea.addEventListener("dragover", e => e.preventDefault());
 
 treeArea.addEventListener("drop", async (e) => {
   e.preventDefault();
@@ -211,18 +205,14 @@ treeArea.addEventListener("drop", async (e) => {
   if (!src) return;
 
   const rect = treeImg.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
 
-  const xRatio = (e.clientX - rect.left) / rect.width;
-  const yRatio = (e.clientY - rect.top) / rect.height;
+  const xRatio = x / rect.width;
+  const yRatio = y / rect.height;
 
   const ornamentDoc = doc(collection(db, "ornaments"));
-  await setDoc(ornamentDoc, {
-    id: ornamentDoc.id,
-    src,
-    xRatio,
-    yRatio,
-    hasMemo: false,
-  });
+  await setDoc(ornamentDoc, { id: ornamentDoc.id, src, xRatio, yRatio, hasMemo: false });
 
   placeOrnament(ornamentDoc.id, src, xRatio, yRatio);
 });
@@ -244,26 +234,28 @@ function placeOrnament(id, src, xRatio, yRatio) {
 
   updateOne(o);
 
-  // 팝업 열기
   o.addEventListener("click", () => openPopup(id));
 
   treeImg.parentElement.appendChild(o);
 }
 
 /* ==============================================
-   위치 재계산 (resize 대응)
+   위치 재계산
 ============================================== */
 function updateOne(o) {
   const areaRect = treeArea.getBoundingClientRect();
   const imgRect = treeImg.getBoundingClientRect();
+
+  const xRatio = parseFloat(o.dataset.xRatio);
+  const yRatio = parseFloat(o.dataset.yRatio);
 
   o.style.width = `${getOrnamentSize()}px`;
 
   const offsetX = imgRect.left - areaRect.left;
   const offsetY = imgRect.top - areaRect.top;
 
-  o.style.left = offsetX + imgRect.width * parseFloat(o.dataset.xRatio) + "px";
-  o.style.top  = offsetY + imgRect.height * parseFloat(o.dataset.yRatio) + "px";
+  o.style.left = offsetX + imgRect.width * xRatio + "px";
+  o.style.top  = offsetY + imgRect.height * yRatio + "px";
 }
 
 function updateAll() {
@@ -274,7 +266,7 @@ window.addEventListener("resize", updateAll);
 new ResizeObserver(updateAll).observe(treeImg);
 
 /* ==============================================
-   🔄 Firestore Sync (실시간 반영)
+   Firestore Sync
 ============================================== */
 onSnapshot(collection(db, "ornaments"), (snap) => {
   const parent = treeImg.parentElement;
@@ -282,27 +274,21 @@ onSnapshot(collection(db, "ornaments"), (snap) => {
   snap.docChanges().forEach((ch) => {
     const d = ch.doc.data();
 
-    // 신규 오너먼트 등장
     if (ch.type === "added") {
       if (!parent.querySelector(`[data-oid="${d.id}"]`)) {
         placeOrnament(d.id, d.src, d.xRatio, d.yRatio);
       }
     }
 
-    // 삭제된 오너먼트 (UI에서도 제거)
     if (ch.type === "removed") {
       const el = parent.querySelector(`[data-oid="${ch.doc.id}"]`);
-
-      // 삭제 애니메이션 중이면 여기서 지우지 않음
-      if (el && !el.dataset.animating) {
-        el.remove();
-      }
+      if (el) el.remove();
     }
   });
 });
 
 /* ==============================================
-   팝업 열기
+   팝업
 ============================================== */
 function openPopup(id) {
   currentOrnamentId = id;
@@ -310,9 +296,7 @@ function openPopup(id) {
   loadMemoList();
 }
 
-closePopupBtn.onclick = () => {
-  popupOverlay.style.display = "none";
-};
+closePopupBtn.onclick = () => popupOverlay.style.display = "none";
 
 /* ==============================================
    메모 로드
@@ -326,11 +310,7 @@ async function loadMemoList() {
     memoListBox.innerHTML = "";
 
     if (snap.empty) {
-      await setDoc(
-        doc(db, "ornaments", currentOrnamentId),
-        { hasMemo: false },
-        { merge: true }
-      );
+      await setDoc(doc(db, "ornaments", currentOrnamentId), { hasMemo: false }, { merge: true });
     }
 
     snap.forEach((docu) => {
@@ -382,8 +362,7 @@ sendBtn.onclick = async () => {
 
   await setDoc(
     doc(db, "ornaments", currentOrnamentId),
-    { hasMemo: true },
-    { merge: true }
+    { hasMemo: true }, { merge: true }
   );
 
   memoInput.value = "";
@@ -411,8 +390,6 @@ deleteBtn.onclick = async () => {
   const src = snap.data().src;
 
   if (el) {
-    el.dataset.animating = "1"; // Firestore Sync에서 제거될 때 중복 방지
-
     if (src.includes("ornament-08")) {
       el.classList.add("ornament-08-dust");
     } else {
@@ -424,7 +401,7 @@ deleteBtn.onclick = async () => {
     }, { once: true });
   }
 
-  await deleteDoc(ref);
+  deleteDoc(ref); // Firestore 삭제 (UI 제거는 이미 완료)
 
   popupOverlay.style.display = "none";
   currentOrnamentId = null;
