@@ -237,20 +237,25 @@ body.panel-closed #panel {
 /* ========== Mobile Panel (핵심 수정 적용됨) ========== */
 #mobile-panel {
   position: fixed;
+  bottom: -40%;
   left: 0;
-  bottom: 0;
-  width: 100vw;
-  height: 0;            /* ← 닫힐 때 공간 0 */
+  width: 100%;
+  height: 40%;
   background: white;
-  overflow: hidden;     /* height = 0일 때 내용 숨김 */
   border-top-left-radius: 16px;
   border-top-right-radius: 16px;
-  padding: 0;           /* 닫힐 때 padding 제거 */
   box-shadow: 0 -4px 10px rgba(0,0,0,0.2);
-  transition: height 0.3s ease, padding 0.3s ease;
   z-index: 99999;
+
+  /* 핵심 */
+  box-sizing: border-box;
+  padding: 16px;
+  
+  transition: bottom 0.3s ease;
   display: none;
+  overflow: hidden;
 }
+
 
 #mobile-panel.open {
   height: 40%;          /* 열릴 때만 공간 차지 */
@@ -262,54 +267,57 @@ body.panel-closed #panel {
   width: 100%;
   display: flex;
   justify-content: space-between;
-  align-items: center;   /* ← 이거 유지해야 글자 수직정렬 */
+  align-items: center;
+  padding: 0 8px;
   box-sizing: border-box;
-  padding: 0 12px;
 }
 
 .mobile-panel-header h3 {
   margin: 0;
-  font-size: 18px;
+  font-size: 16px;
+  white-space: nowrap;
 }
 
 .close-mobile {
   font-size: 16px;
   cursor: pointer;
+  white-space: nowrap;
 }
+
 
 /* ========== 모바일 오너먼트 그리드 (정사각형 + 스크롤 + 그림자) ========== */
 .mobile-grid {
   width: 100%;
   max-width: 100%;
-  overflow-x: hidden;       /* 가로 스크롤 제거 */
-  overflow-y: auto;         /* 세로 스크롤만 허용 */
   box-sizing: border-box;
+
   margin-top: 12px;
-  
-  height: calc(100% - 60px); /* 헤더 제외한 영역 */
-  
+  height: calc(100% - 45px);
+
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 10px;
 
-  padding-right: 4px;        /* 스크롤바 여유 공간 */
+  overflow-y: auto;
+  overflow-x: hidden;
 }
+
 
 .mobile-grid-item {
   width: 100%;
-  aspect-ratio: 1 / 1;       /* 정사각형 유지 */
+  aspect-ratio: 1 / 1;
   background: white;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-  overflow: hidden;          /* 이미지 튐 방지 */
+  overflow: hidden;
 }
 
 .mobile-grid-item img {
   width: 80%;
   height: 80%;
-  object-fit: contain;
   display: block;
   margin: auto;
+  object-fit: contain;
 }
 
 
