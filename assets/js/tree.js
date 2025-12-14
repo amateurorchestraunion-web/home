@@ -39,7 +39,7 @@ if (isMobile) {
 }
 
 /* ==============================================
-   스케일 계산
+   트리 스케일 계산
 ============================================== */
 function getTreeScale() {
   return treeImg.clientWidth / treeImg.naturalWidth;
@@ -54,6 +54,7 @@ function getOrnamentSize() {
 ============================================== */
 document.querySelector(".close-panel").onclick = () => {
   if (isMobile) return;
+
   document.body.classList.add("panel-closed");
   document.body.classList.remove("panel-open");
 
@@ -68,7 +69,6 @@ closeMobileBtn.onclick = () => {
   mobilePanel.classList.remove("open");
   document.body.classList.remove("mobile-panel-open");
   floatingBtn.style.display = "flex";
-
   setTimeout(updateAll, 260);
 };
 
@@ -92,11 +92,12 @@ floatingBtn.onclick = () => {
 function createOrnament(src, id) {
   const wrap = document.createElement("div");
   const img = document.createElement("img");
+
   img.src = src;
   img.dataset.id = id;
   img.draggable = true;
 
-  img.addEventListener("dragstart", e => {
+  img.addEventListener("dragstart", (e) => {
     e.dataTransfer.setData("src", src);
   });
 
@@ -114,8 +115,10 @@ for (let i = 1; i <= 12; i++) {
 
   ornamentGrid.appendChild(createOrnament(src, id));
 
+  // mobile
   const wrap = document.createElement("div");
   wrap.className = "mobile-grid-item";
+
   const img = document.createElement("img");
   img.src = src;
   img.dataset.id = id;
@@ -128,16 +131,15 @@ for (let i = 1; i <= 12; i++) {
 }
 
 /* ==============================================
-   모바일 Long Press Drag
+   ★ 모바일 Long Press Drag
 ============================================== */
-
 let longPressTimer = null;
 let isDragging = false;
 let dragGhost = null;
 let dragSrc = null;
 
 function addMobileLongPressDrag(img) {
-  img.addEventListener("contextmenu", e => e.preventDefault());
+  img.addEventListener("contextmenu", (e) => e.preventDefault());
 
   img.addEventListener("touchstart", (e) => {
     e.preventDefault();
@@ -169,7 +171,6 @@ function addMobileLongPressDrag(img) {
 
   img.addEventListener("touchend", async (e) => {
     clearTimeout(longPressTimer);
-
     if (!isDragging || !dragGhost) return;
 
     const t = e.changedTouches[0];
@@ -178,14 +179,22 @@ function addMobileLongPressDrag(img) {
     isDragging = false;
 
     const rect = treeImg.getBoundingClientRect();
-    if (t.clientX < rect.left || t.clientX > rect.right ||
-        t.clientY < rect.top  || t.clientY > rect.bottom) return;
+    if (
+      t.clientX < rect.left || t.clientX > rect.right ||
+      t.clientY < rect.top || t.clientY > rect.bottom
+    ) return;
 
     const xRatio = (t.clientX - rect.left) / rect.width;
     const yRatio = (t.clientY - rect.top) / rect.height;
 
     const ornamentDoc = doc(collection(db, "ornaments"));
-    await setDoc(ornamentDoc, { id: ornamentDoc.id, src: dragSrc, xRatio, yRatio, hasMemo: false });
+    await setDoc(ornamentDoc, {
+      id: ornamentDoc.id,
+      src: dragSrc,
+      xRatio,
+      yRatio,
+      hasMemo: false,
+    });
 
     placeOrnament(ornamentDoc.id, dragSrc, xRatio, yRatio);
   });
@@ -194,7 +203,7 @@ function addMobileLongPressDrag(img) {
 /* ==============================================
    PC 드롭
 ============================================== */
-treeArea.addEventListener("dragover", e => e.preventDefault());
+treeArea.addEventListener("dragover", (e) => e.preventDefault());
 
 treeArea.addEventListener("drop", async (e) => {
   e.preventDefault();
@@ -203,14 +212,17 @@ treeArea.addEventListener("drop", async (e) => {
   if (!src) return;
 
   const rect = treeImg.getBoundingClientRect();
-  const x = e.clientX - rect.left;
-  const y = e.clientY - rect.top;
-
-  const xRatio = x / rect.width;
-  const yRatio = y / rect.height;
+  const xRatio = (e.clientX - rect.left) / rect.width;
+  const yRatio = (e.clientY - rect.top) / rect.height;
 
   const ornamentDoc = doc(collection(db, "ornaments"));
-  await setDoc(ornamentDoc, { id: ornamentDoc.id, src, xRatio, yRatio, hasMemo: false });
+  await setDoc(ornamentDoc, {
+    id: ornamentDoc.id,
+    src,
+    xRatio,
+    yRatio,
+    hasMemo: false,
+  });
 
   placeOrnament(ornamentDoc.id, src, xRatio, yRatio);
 });
@@ -244,16 +256,13 @@ function updateOne(o) {
   const areaRect = treeArea.getBoundingClientRect();
   const imgRect = treeImg.getBoundingClientRect();
 
-  const xRatio = parseFloat(o.dataset.xRatio);
-  const yRatio = parseFloat(o.dataset.yRatio);
-
   o.style.width = `${getOrnamentSize()}px`;
 
   const offsetX = imgRect.left - areaRect.left;
   const offsetY = imgRect.top - areaRect.top;
 
-  o.style.left = offsetX + imgRect.width * xRatio + "px";
-  o.style.top  = offsetY + imgRect.height * yRatio + "px";
+  o.style.left = offsetX + imgRect.width * parseFloat(o.dataset.xRatio) + "px";
+  o.style.top = offsetY + imgRect.height * parseFloat(o.dataset.yRatio) + "px";
 }
 
 function updateAll() {
@@ -264,7 +273,7 @@ window.addEventListener("resize", updateAll);
 new ResizeObserver(updateAll).observe(treeImg);
 
 /* ==============================================
-   Firestore Sync
+   Firestore Sync (실시간 반영)
 ============================================== */
 onSnapshot(collection(db, "ornaments"), (snap) => {
   const parent = treeImg.parentElement;
@@ -280,7 +289,9 @@ onSnapshot(collection(db, "ornaments"), (snap) => {
 
     if (ch.type === "removed") {
       const el = parent.querySelector(`[data-oid="${ch.doc.id}"]`);
-      if (el) el.remove();
+      if (el && !el.dataset.animating) {
+        el.remove();
+      }
     }
   });
 });
@@ -294,7 +305,7 @@ function openPopup(id) {
   loadMemoList();
 }
 
-closePopupBtn.onclick = () => popupOverlay.style.display = "none";
+closePopupBtn.onclick = () => (popupOverlay.style.display = "none");
 
 /* ==============================================
    메모 로드
@@ -308,7 +319,11 @@ async function loadMemoList() {
     memoListBox.innerHTML = "";
 
     if (snap.empty) {
-      await setDoc(doc(db, "ornaments", currentOrnamentId), { hasMemo: false }, { merge: true });
+      await setDoc(
+        doc(db, "ornaments", currentOrnamentId),
+        { hasMemo: false },
+        { merge: true }
+      );
     }
 
     snap.forEach((docu) => {
@@ -317,7 +332,9 @@ async function loadMemoList() {
       const box = document.createElement("div");
       box.className = "memo-item";
       box.innerHTML = `
-        <div class="memo-timestamp">${new Date(d.timestamp).toLocaleString()}</div>
+        <div class="memo-timestamp">${new Date(
+          d.timestamp
+        ).toLocaleString()}</div>
         <div>${d.text}</div>
       `;
 
@@ -327,7 +344,9 @@ async function loadMemoList() {
 
       del.onclick = async () => {
         if (confirm("메모를 삭제하시겠습니까?")) {
-          await deleteDoc(doc(db, "ornaments", currentOrnamentId, "memoList", docu.id));
+          await deleteDoc(
+            doc(db, "ornaments", currentOrnamentId, "memoList", docu.id)
+          );
         }
       };
 
@@ -351,16 +370,19 @@ sendBtn.onclick = async () => {
   const text = memoInput.value.trim();
   if (!text) return;
 
-  const memoId = doc(collection(db, "ornaments", currentOrnamentId, "memoList")).id;
+  const memoId = doc(
+    collection(db, "ornaments", currentOrnamentId, "memoList")
+  ).id;
 
-  await setDoc(
-    doc(db, "ornaments", currentOrnamentId, "memoList", memoId),
-    { text, timestamp: Date.now() }
-  );
+  await setDoc(doc(db, "ornaments", currentOrnamentId, "memoList", memoId), {
+    text,
+    timestamp: Date.now(),
+  });
 
   await setDoc(
     doc(db, "ornaments", currentOrnamentId),
-    { hasMemo: true }, { merge: true }
+    { hasMemo: true },
+    { merge: true }
   );
 
   memoInput.value = "";
@@ -385,21 +407,27 @@ deleteBtn.onclick = async () => {
   if (!confirm("정말 삭제하시겠습니까?")) return;
 
   const el = document.querySelector(`[data-oid="${id}"]`);
-  const src = snap.data().src;
-
   if (el) {
+    el.dataset.animating = "1"; // snapshot에서 실수로 삭제되지 않도록 보호
+
+    const src = el.src;
+
     if (src.includes("ornament-08")) {
       el.classList.add("ornament-08-dust");
     } else {
       el.classList.add("ornament-default-fade");
     }
 
-    el.addEventListener("animationend", () => {
-      el.remove();
-    }, { once: true });
+    el.addEventListener(
+      "animationend",
+      () => {
+        el.remove();
+      },
+      { once: true }
+    );
   }
 
-  deleteDoc(ref); // Firestore 삭제 (UI 제거는 이미 완료)
+  await deleteDoc(ref);
 
   popupOverlay.style.display = "none";
   currentOrnamentId = null;
