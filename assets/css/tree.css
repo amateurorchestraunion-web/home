@@ -247,15 +247,16 @@ body.panel-closed #panel {
   box-shadow: 0 -4px 10px rgba(0,0,0,0.2);
   z-index: 99999;
 
-  /* 핵심 */
   box-sizing: border-box;
   padding: 16px;
-  
+
   transition: bottom 0.3s ease;
   display: none;
-  overflow: hidden;
-}
 
+  /* 핵심 수정 */
+  overflow-y: auto;
+  overflow-x: hidden;
+}
 
 #mobile-panel.open {
   height: 40%;          /* 열릴 때만 공간 차지 */
