@@ -26,7 +26,7 @@ const deleteBtn = document.querySelector(".delete-btn");
 
 let currentOrnamentId = null;
 
-const BASE_ORNAMENT_SIZE = 120;
+const BASE_ORNAMENT_SIZE = 160;
 const isMobile = window.matchMedia("(max-width: 768px)").matches;
 
 /* ==============================================
