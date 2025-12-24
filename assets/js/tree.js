@@ -107,7 +107,7 @@ function createOrnament(src, id) {
 /* ==============================================
    PC + 모바일 오너먼트 로드
 ============================================== */
-for (let i = 1; i <= 37; i++) {
+for (let i = 1; i <= 38; i++) {
   const num = i.toString().padStart(2, "0");
   const src = `./assets/img/ornaments/ornament-${num}.png`;
   const id = `orn_${num}`;
