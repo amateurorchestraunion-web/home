@@ -436,4 +436,4 @@ function createSnow() {
 }
 
 // 초당 4~7개 눈 생성
-setInterval(createSnow, 200);
+setInterval(createSnow, 300);
