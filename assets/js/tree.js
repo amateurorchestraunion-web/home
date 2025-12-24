@@ -404,3 +404,36 @@ deleteBtn.onclick = async () => {
   popupOverlay.style.display = "none";
   currentOrnamentId = null;
 };
+
+/* ============================================
+   ❄️ 눈 생성 로직
+============================================ */
+function createSnow() {
+  const snow = document.createElement("div");
+  snow.className = "snowflake";
+  snow.textContent = "❄";
+
+  const treeRect = treeArea.getBoundingClientRect();
+
+  // 랜덤 가로 위치
+  snow.style.left = Math.random() * treeRect.width + "px";
+
+  // 랜덤 크기
+  const size = 8 + Math.random() * 14; 
+  snow.style.fontSize = size + "px";
+
+  // 랜덤 지속 시간
+  const duration = 4 + Math.random() * 6;
+  snow.style.animationDuration = duration + "s";
+
+  // 랜덤 좌우 흔들림 추가
+  snow.style.animationTimingFunction = "ease-in-out";
+
+  treeArea.appendChild(snow);
+
+  // 애니메이션 끝나면 자동 삭제
+  setTimeout(() => snow.remove(), duration * 1000);
+}
+
+// 초당 4~7개 눈 생성
+setInterval(createSnow, 200);
