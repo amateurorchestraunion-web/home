@@ -2035,40 +2035,66 @@ and (device-width: 1366px) and (device-height: 1024px) and (orientation: landsca
   }
 }
 
-/*--------------------------------------------------------------
-# 연혁 스타일
---------------------------------------------------------------*/
+/*-------------------------------------------------------------- 
+# 연혁 스타일 
+--------------------------------------------------------------*/ 
+
+/* 연혁 전체 - PC에서는 자동 2단 분할 */
+#features-tab-2 .timeline-wrap {
+  column-count: 2;
+  column-gap: 70px;
+  column-fill: balance;
+}
+
 /* 연혁 타임라인 스타일 */
 #features-tab-2 .timeline {
   margin: 0;
   padding: 0;
 }
+
 #features-tab-2 .timeline-item {
   display: flex;
   align-items: flex-start;
   margin-bottom: 1rem;
+
+  /* 하나의 연혁 항목이 두 단 사이에서 잘리지 않도록 */
+  break-inside: avoid;
+  -webkit-column-break-inside: avoid;
 }
+
 #features-tab-2 .timeline-date {
   flex: 0 0 100px;
   font-weight: 600;
   color: var(--accent-color);
 }
+
 #features-tab-2 .timeline-content {
   flex: 1;
   line-height: 1.6;
   color: var(--default-color);
 }
+
+
+/* 기존 Bootstrap col-lg-6처럼 992px 미만에서는 1단 */
+@media (max-width: 991.98px) {
+  #features-tab-2 .timeline-wrap {
+    column-count: 1;
+  }
+}
+
+
 @media (max-width: 575.98px) {
+
   /* 모바일에서 timeline-item 을 한 줄(row) flex 컨테이너로 */
   #features-tab-2 .timeline-item {
     display: flex;
     align-items: flex-start;
-    margin-bottom: 0.5rem; /* 항목 간 간격 */
+    margin-bottom: 0.5rem;
   }
 
   /* 날짜 영역 고정 너비, 우측 여백 추가 */
   #features-tab-2 .timeline-item .timeline-date {
-    flex: 0 0 80px; /* 날짜 칸 너비 (필요시 px → % 로 조정) */
+    flex: 0 0 80px;
     margin-right: 0.5rem;
   }
 
