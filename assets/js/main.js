@@ -146,7 +146,7 @@
       initIsotope = new Isotope(isotopeItem.querySelector('.isotope-container'), {
         itemSelector: '.isotope-item',
         layoutMode: layout,
-        filter: '.filter-2015',
+        filter: '.filter-2025',
         sortBy: sort
       });
     });
